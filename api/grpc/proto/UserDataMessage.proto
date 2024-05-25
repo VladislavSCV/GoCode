@@ -1,0 +1,108 @@
+syntax="proto3";
+
+option go_package="com.user_data";
+
+message GetUserDataRequest {
+    string user_id = 1;
+}
+
+message GetUserDataResponse {
+    string user_id = 1;
+    string username = 2;
+    string description = 3;
+    string email = 4;
+    string phone = 5;
+    string avatar = 6;
+    string status = 7;
+}
+
+message UpdateUserDataRequest {
+    string user_id = 1;
+    string username = 2;
+    string description = 3;
+    string email = 4;
+    string phone = 5;
+    string avatar = 6;
+    string status = 7;
+}
+
+message UpdateUserDataResponse {
+    string user_id = 1;
+}
+
+message UpdateUserPasswordRequest {
+    string user_id = 1;
+    string old_password = 2;
+    string new_password = 3;
+}
+
+message UpdateUserPasswordResponse {
+    string user_id = 1;
+}
+
+message UpdateUserEmailRequest {
+    string user_id = 1;
+    string new_email = 2;
+}
+
+message UpdateUserEmailResponse {
+    string user_id = 1;
+}
+
+message UpdateUserPhoneRequest {
+    string user_id = 1;
+    string new_phone = 2;
+}
+
+message UpdateUserPhoneResponse {
+    string user_id = 1;
+}
+
+message UpdateUserStatusRequest {
+    string user_id = 1;
+    string new_status = 2;
+}
+
+message UpdateUserStatusResponse {
+    string user_id = 1;
+}
+
+message UpdateUserAvatarRequest {
+    string user_id = 1;
+    string new_avatar = 2;
+}
+
+message UpdateUserAvatarResponse {
+    string user_id = 1;
+}
+
+message UpdateUserNameRequest {
+    string user_id = 1;
+    string new_username = 2;
+}
+
+message UpdateUserNameResponse {
+    string user_id = 1;
+}
+
+message UpdateUserDescriptionRequest {
+    string user_id = 1;
+    string new_description = 2;
+}
+
+message UpdateUserDescriptionResponse {
+    string user_id = 1;
+}
+
+service UserDataMessageService {
+    rpc GetUserData(GetUserDataRequest) returns (GetUserDataResponse);
+    rpc UpdateUserData(UpdateUserDataRequest) returns (UpdateUserDataResponse);
+    rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (UpdateUserPasswordResponse);
+    rpc UpdateUserEmail(UpdateUserEmailRequest) returns (UpdateUserEmailResponse);
+    rpc UpdateUserPhone(UpdateUserPhoneRequest) returns (UpdateUserPhoneResponse);
+    rpc UpdateUserStatus(UpdateUserStatusRequest) returns (UpdateUserStatusResponse);
+    rpc UpdateUserAvatar(UpdateUserAvatarRequest) returns (UpdateUserAvatarResponse);
+    rpc UpdateUserName(UpdateUserNameRequest) returns (UpdateUserNameResponse);
+    rpc UpdateUserDescription(UpdateUserDescriptionRequest) returns (UpdateUserDescriptionResponse);
+}
+
