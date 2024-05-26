@@ -1,0 +1,7 @@
+{
+    "go.toolsEnvVars": {
+        "GOOS": "windows",
+        "CGO_ENABLED": "0",
+        "GOARCH": "amd64"
+    }
+}

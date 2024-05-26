@@ -1,6 +1,6 @@
-module github.com/VladislavSCV
+module github.com/VladislavSCV/web/app
 
-go 1.21.6
+go 1.21
 
 require (
 	github.com/bytedance/sonic v1.11.7 // indirect

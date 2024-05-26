@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - GoCode Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">Вход - GoCode Challenge</div>
+        <form class="form" action="login_handler.php" method="POST">
+            <input class="input" type="email" name="email" placeholder="Электронная почта" required>
+            <input class="input" type="password" name="password" placeholder="Пароль" required>
+            <button class="button" type="submit">Войти</button>
+        </form>
+        <div class="oauth">
+            <span>или войдите с помощью:</span>
+                <img src="../static/assets/facebook.png" alt="Facebook" style="width: auto; margin-right: 20px;">
+                <img src="../static/assets/google.png" alt="Google" style="width: auto; margin-right: 20px;">
+                <img src="../static/assets/vk.png" alt="Google" style="width: auto; margin-right: 20px;">
+        </div>
+        <div class="footer">
+            © 2024 GoCode Challenge. Все права защищены.
+        </div>
+    </div>
+</body>
+</html>
