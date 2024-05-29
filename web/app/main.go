@@ -5,7 +5,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/sessions"
+    "github.com/gin-contrib/sessions/cookie"
 )
+
+type Credentials struct {
+    Username string `json:"username"`
+    Password string `json:"password"`
+}
 
 func LoggerMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
@@ -20,6 +27,8 @@ func main() {
 	r.LoadHTMLGlob("../templates/*")
 	r.Static("/static", "../static")
 
+	store := cookie.NewStore([]byte("secret"))
+    r.Use(sessions.Sessions("mysession", store))
 	r.Use(LoggerMiddleware())
 
 	r.GET("/", GetIndex)
@@ -70,6 +79,7 @@ func GetSignUP(c *gin.Context) {
 // @Failure 400 {object} model.HTTPError
 // @Router /accounts/{id} [get]
 func GetLogin(c *gin.Context) {
+	
 	c.HTML(http.StatusOK, "login.html", gin.H{
 		 "status": http.StatusOK, 
 	})
