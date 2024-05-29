@@ -17,23 +17,27 @@ func LoggerMiddleware() gin.HandlerFunc {
 
 func main() {
 	r := gin.Default()
-	r.LoadHTMLGlob("../template/*")
+	r.LoadHTMLGlob("../templates/*")
 	r.Static("/static", "../static")
 
 	r.Use(LoggerMiddleware())
 
-	r.GET("/", Index)
-	r.GET("/SignUp", SignUP)
-	r.GET("/Login", Login)
-	r.GET("/GoCode", MainPage)
+	r.GET("/", GetIndex)
+	r.GET("/SignUp", GetSignUP)
+	r.GET("/Login", GetLogin)
+	r.GET("/GoCode", GetMainPage)
 	r.GET("/Task", GetTask)
 	r.POST("/Task", PostTask)
+	r.GET("/Profile", GetProfile)
+	r.GET("/Resourses", GetResourses)
+	r.GET("/Catalog", GetCatalog)
+	r.POST("/Catalog", PostCatalog)
 
 	r.Run(":8000")
 }
 
 
-func Index(c *gin.Context) {
+func GetIndex(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"title": "TITLE",
 	})
@@ -49,7 +53,7 @@ func Index(c *gin.Context) {
 // @Success 200 {object} model.Account
 // @Failure 400 {object} model.HTTPError
 // @Router /accounts/{id} [get]
-func SignUP(c *gin.Context) {
+func GetSignUP(c *gin.Context) {
 	c.HTML(http.StatusOK, "signup.html", gin.H{
 		 "status": http.StatusOK, 
 	})
@@ -65,7 +69,7 @@ func SignUP(c *gin.Context) {
 // @Success 200 {object} model.Account
 // @Failure 400 {object} model.HTTPError
 // @Router /accounts/{id} [get]
-func Login(c *gin.Context) {
+func GetLogin(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.html", gin.H{
 		 "status": http.StatusOK, 
 	})
@@ -83,7 +87,7 @@ func Login(c *gin.Context) {
 // @Success 200 {object} model.Account
 // @Failure 400 {object} model.HTTPError
 // @Router /accounts/{id} [get]
-func MainPage(c *gin.Context) {
+func GetMainPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "main.html", gin.H{
 		"status": http.StatusOK,
 	})
@@ -123,7 +127,6 @@ func GetTask(c *gin.Context) {
 // @Router /accounts/{id} [post]
 
 type CheckCode struct {
-	Verify_code string `json:"verify_code"`
 	Code string `json:"code" form:"code"`
 }
 
@@ -150,4 +153,71 @@ func CheckSolution(code string) bool {
 	// В зависимости от результата возвращайте true или false
 	// Например, если решение правильное, то возвращаем true, иначе false
 	return true
+}
+
+
+// ref: https://swaggo.github.io/swaggo.io/declarative_comments_format/api_operation.html
+// @Summary Show profile
+// @Description get string by ID
+// @Tags accounts
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Account ID"
+// @Success 200 {object} model.Account
+// @Failure 400 {object} model.HTTPError
+// @Router /accounts/{id} [get]
+func GetProfile(c *gin.Context) {
+	c.HTML(http.StatusOK, "profile.html", gin.H{
+		"status": http.StatusOK,
+	})
+}
+
+
+// ref: https://swaggo.github.io/swaggo.io/declarative_comments_format/api_operation.html
+// @Summary Show resurs page
+// @Description get string by ID
+// @Tags accounts
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Account ID"
+// @Success 200 {object} model.Account
+// @Failure 400 {object} model.HTTPError
+// @Router /accounts/{id} [get]
+func GetResourses(c *gin.Context) {
+	c.HTML(http.StatusOK, "resourses.html", gin.H{
+		"status": http.StatusOK,
+	})
+}
+
+
+// ref: https://swaggo.github.io/swaggo.io/declarative_comments_format/api_operation.html
+// @Summary Show catalog
+// @Description get string by ID
+// @Tags accounts
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Account ID"
+// @Success 200 {object} model.Account
+// @Failure 400 {object} model.HTTPError
+// @Router /accounts/{id} [get]
+func GetCatalog(c *gin.Context) {
+	c.HTML(http.StatusOK, "catalog.html", gin.H{
+		"status": http.StatusOK,
+	})
+}
+
+func PostCatalog(c *gin.Context) {
+    difficulty := c.PostForm("difficulty")
+    category := c.PostForm("category")
+
+    // TODO: get data from db
+    // ...
+
+    // TODO: render data instead of redirection
+    c.HTML(http.StatusOK, "catalog.html", gin.H{
+        "status": http.StatusOK,
+        "difficulty": difficulty,
+        "category": category,
+    })
+    c.Abort()
 }

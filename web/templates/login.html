@@ -8,6 +8,18 @@
     <link rel="stylesheet" href="../static/css/login.css">
 </head>
 <body>
+    <header>
+        <nav>
+            <div class="logo">GoCode Challenge</div>
+            <div class="menu">
+                <a href="/Profile">Профиль</a>
+                <a href="/Task">Задачи</a>
+                <a href="/Resourses">Ресурсы</a>
+                <a href="#contact">Контакты</a>
+                <a href="#faq">FAQ</a>
+            </div>
+        </nav>
+    </header>
     <div class="container">
         <div class="header">Вход - GoCode Challenge</div>
         <form class="form" action="login_handler.php" method="POST">
@@ -17,9 +29,11 @@
         </form>
         <div class="oauth">
             <span>или войдите с помощью:</span>
-                <img src="../static/assets/facebook.png" alt="Facebook" style="width: auto; margin-right: 20px;">
-                <img src="../static/assets/google.png" alt="Google" style="width: auto; margin-right: 20px;">
-                <img src="../static/assets/vk.png" alt="Google" style="width: auto; margin-right: 20px;">
+            <div class="oauth-icons">
+                <img src="../static/assets/facebook.png" alt="Facebook">
+                <img src="../static/assets/google.png" alt="Google">
+                <img src="../static/assets/vk.png" alt="VK">
+            </div>
         </div>
         <div class="footer">
             © 2024 GoCode Challenge. Все права защищены.

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ресурсы для изучения Golang - GoCode Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0d0d0d;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #1a1a1a;
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        nav a {
+            color: #00ff00;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 1em;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 0; /* отступ сверху для хедера */
+            padding: 20px;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #1a1a1a;
+            padding: 20px;
+            position: sticky;
+            top: 100px;
+            height: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .sidebar a {
+            display: block;
+            color: #00ff00;
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-size: 1em;
+            transition: color 0.3s;
+        }
+        .sidebar a:hover {
+            color: #fff;
+        }
+        .content {
+            flex: 1;
+            margin-left: 20px;
+        }
+        .content h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .content p {
+            margin-bottom: 20px;
+        }
+        .content pre {
+            background-color: #2d2d2d;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .content code {
+            color: #00ff00;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #777;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">GoCode Challenge</div>
+            <div class="menu">
+                <a href="#introduction">Введение</a>
+                <a href="#syntax">Синтаксис</a>
+                <a href="#packages">Пакеты</a>
+                <a href="#concurrency">Конкурентность</a>
+                <a href="#web">Веб-разработка</a>
+                <a href="#testing">Тестирование</a>
+                <a href="#tools">Инструменты</a>
+                <a href="#best-practices">Лучшие практики</a>
+                <a href="#resources">Дополнительные ресурсы</a>
+                <a href="#contact">Контакты</a>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="sidebar">
+            <a href="#introduction">Введение</a>
+            <a href="#syntax">Синтаксис</a>
+            <a href="#packages">Пакеты</a>
+            <a href="#concurrency">Конкурентность</a>
+            <a href="#web">Веб-разработка</a>
+            <a href="#testing">Тестирование</a>
+            <a href="#tools">Инструменты</a>
+            <a href="#best-practices">Лучшие практики</a>
+            <a href="#resources">Дополнительные ресурсы</a>
+            <a href="#contact">Контакты</a>
+        </div>
+        <div class="content">
+            <section id="introduction">
+                <h2>Введение в Go</h2>
+                <p>Go (или Golang) — это язык программирования, разработанный в Google. Он был создан для повышения производительности и простоты работы с кодом. Go поддерживает многопоточность и идеально подходит для создания высоконагруженных систем.</p>
+            </section>
+            <section id="syntax">
+                <h2>Основы синтаксиса Go</h2>
+                <p>Go имеет строгий синтаксис, который делает его код более читаемым и предсказуемым. Основные элементы включают переменные, циклы, условные операторы и функции.</p>
+                <h3>Переменные</h3>
+                <p>Пример объявления переменной в Go:</p>
+                <pre><code>var x int = 42</code></pre>
+                <h3>Циклы</h3>
+                <p>Go поддерживает только один тип цикла — for:</p>
+                <pre><code>for i := 0; i < 10; i++ {
+    fmt.Println(i)
+}</code></pre>
+                <h3>Условные операторы</h3>
+                <p>Пример использования if-else в Go:</p>
+                <pre><code>if x > 10 {
+    fmt.Println("x больше 10")
+} else {
+    fmt.Println("x меньше или равно 10")
+}</code></pre>
+                <h3>Функции</h3>
+                <p>Объявление и использование функции:</p>
+                <pre><code>func add(a int, b int) int {
+    return a + b
+}
+
+func main() {
+    sum := add(3, 4)
+    fmt.Println(sum)
+}</code></pre>
+            </section>
+            <section id="packages">
+                <h2>Работа с пакетами</h2>
+                <p>Пакеты — это способ организации кода в Go. Каждый Go файл принадлежит к определенному пакету, а главный файл программы находится в пакете main.</p>
+                <p>Пример импорта пакетов:</p>
+                <pre><code>import (
+    "fmt"
+    "math"
+)</code></pre>
+                <h3>Создание собственного пакета</h3>
+                <p>Создание простого пакета:</p>
+                <pre><code>// mathutil/mathutil.go
+package mathutil
+
+func Add(a int, b int) int {
+    return a + b
+}</code></pre>
+                <p>Использование пакета:</p>
+                <pre><code>package main
+
+import (
+    "fmt"
+    "mathutil"
+)
+
+func main() {
+    sum := mathutil.Add(3, 4)
+    fmt.Println(sum)
+}</code></pre>
+            </section>
+            <section id="concurrency">
+                <h2>Конкурентность в Go</h2>
+                <p>Конкурентность — это одна из самых сильных сторон Go. Она достигается благодаря горутинам и каналам, которые позволяют писать многопоточные программы проще и эффективнее.</p>
+                <h3>Горутины</h3>
+                <p>Горутины — это функции, которые выполняются параллельно с другими горутинами:</p>
+                <pre><code>go myFunction()</code></pre>
+                <p>Пример использования горутин:</p>
+                <pre><code>package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func say(s string) {
+    for i := 0; i < 5; i++ {
+        time.Sleep(100 * time.Millisecond)
+        fmt.Println(s)
+    }
+}
+
+func main() {
+    go say("world")
+    say("hello")
+}</code></pre>
+                <h3>Каналы</h3>
+                <p>Каналы используются для обмена данными между горутинами:</p>
+                <pre><code>ch := make(chan int)
+ch <- 42
+fmt.Println(<-ch)</code></pre>
+                <p>Пример использования каналов:</p>
+                <pre><code>package main
+
+import "fmt"
+
+func sum(a []int, c chan int) {
+    total := 0
+    for _, v := range a {
+        total += v
+    }
+    c <- total
+}
+
+func main() {
+    a := []int{7, 2, 8, -9, 4, 0}
+
+    c := make(chan int)
+    go sum(a[:len(a)/2], c)
+    go sum(a[len(a)/2:], c)
+    x, y := <-c, <-c
+
+    fmt.Println(x, y, x+y)
+}</code></pre>
+            </section>
+            <section id="web">
+                <h2>Веб-разработка на Go</h2>
+                <p>Go также отлично подходит для веб-разработки. С помощью стандартной библиотеки net/http можно легко создавать веб-серверы.</p>
+                <p>Пример простого веб-сервера:</p>
+                <pre><code>package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Hello, World!")
+}
+
+func main() {
+    http.HandleFunc("/", handler)
+    http.ListenAndServe(":8080", nil)
+}</code></pre>
+                <h3>Создание REST API</h3>
+                <p>Пример создания простого REST API:</p>
+                <pre><code>package main
+
+import (
+    "encoding/json"
+    "net/http"
+)
+
+type Message struct {
+    Text string `json:"text"`
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    msg := Message{Text: "Hello, World!"}
+    json.NewEncoder(w).Encode(msg)
+}
+
+func main() {
+    http.HandleFunc("/api", handler)
+    http.ListenAndServe(":8080", nil)
+}</code></pre>
+            </section>
+            <section id="testing">
+                <h2>Тестирование в Go</h2>
+                <p>Тестирование — важная часть разработки. В Go есть встроенная поддержка тестирования через пакет testing.</p>
+                <h3>Создание тестов</h3>
+                <p>Пример теста:</p>
+                <pre><code>package mathutil
+
+import "testing"
+
+func TestAdd(t *testing.T) {
+    result := Add(3, 4)
+    expected := 7
+    if result != expected {
+        t.Errorf("Add(3, 4) = %d; want %d", result, expected)
+    }
+}</code></pre>
+                <h3>Запуск тестов</h3>
+                <p>Запуск тестов в командной строке:</p>
+                <pre><code>go test</code></pre>
+            </section>
+            <section id="tools">
+                <h2>Инструменты для разработки на Go</h2>
+                <p>Существует множество инструментов, которые могут упростить разработку на Go.</p>
+                <h3>Go Modules</h3>
+                <p>Go Modules — это система управления зависимостями в Go:</p>
+                <pre><code>go mod init myproject</code></pre>
+                <h3>Go fmt</h3>
+                <p>Go fmt автоматически форматирует ваш код:</p>
+                <pre><code>go fmt</code></pre>
+                <h3>Go Vet</h3>
+                <p>Go Vet анализирует ваш код на наличие ошибок:</p>
+                <pre><code>go vet</code></pre>
+                <h3>Delve</h3>
+                <p>Delve — это отладчик для Go:</p>
+                <pre><code>dlv debug</code></pre>
+            </section>
+            <section id="best-practices">
+                <h2>Лучшие практики разработки на Go</h2>
+                <p>Следование лучшим практикам помогает писать более чистый и поддерживаемый код.</p>
+                <h3>Именование</h3>
+                <p>Используйте осмысленные имена для переменных и функций.</p>
+                <h3>Обработка ошибок</h3>
+                <p>Проверяйте все ошибки и обрабатывайте их должным образом.</p>
+                <pre><code>if err != nil {
+    log.Fatal(err)
+}</code></pre>
+                <h3>Документация</h3>
+                <p>Добавляйте комментарии и документацию к вашему коду.</p>
+            </section>
+            <section id="resources">
+                <h2>Дополнительные ресурсы</h2>
+                <p>Вот несколько полезных ссылок для изучения Go:</p>
+                <ul>
+                    <li><a href="https://golang.org/doc/" target="_blank">Официальная документация Go</a></li>
+                    <li><a href="https://tour.golang.org/" target="_blank">Интерактивный тур по Go</a></li>
+                    <li><a href="https://gobyexample.com/" target="_blank">Go by Example</a></li>
+                    <li><a href="https://gophercises.com/" target="_blank">Gophercises</a></li>
+                </ul>
+            </section>
+            
+        </div>
+    </div>
+    <div class="footer">
+        © 2024 GoCode Challenge. Все права защищены.
+    </div>
+</body>
+</html>
