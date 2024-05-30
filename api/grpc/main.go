@@ -6,15 +6,19 @@ import (
     "net"
 
     "google.golang.org/grpc"
+
     pb "github.com/VladislavSCV/api/grpc/gen/pb-go/com.user_data"
+
+    // "github.com/VladislavSCV/migrations/..." // импортируем все функции и структуры из пакета migrations
 )
+
 
 type server struct {
     pb.UnimplementedUserDataMessageServiceServer
 }
 
 func (s *server) GetUserData(ctx context.Context, in *pb.GetUserDataRequest) (*pb.GetUserDataResponse, error) {
-
+    
 }
 
 func (s *server) UpdateUserData(ctx context.Context, in *pb.UpdateUserDataRequest) (*pb.UpdateUserDataResponse, error) {
