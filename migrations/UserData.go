@@ -3,9 +3,28 @@ package main
 import (
 	"database/sql"
 	"log"
-
-	"github.com/VladislavSCV/migrations/models"
+	"time"
 )
+
+type UserData struct {
+	ID             int       `json:"id"`
+	UserName       string    `json:"user_name"`
+	Description    string    `json:"description"`
+	Email          string    `json:"email"`
+	Phone          string    `json:"phone"`
+	AvatarUrl      string    `json:"avatar_url"`
+	Status         string    `json:"status"`
+	Role           string    `json:"role"`
+	PasswordHash   string    `json:"password_hash"`
+	DateOfBirth    time.Time `json:"date_of_birth"`
+	PrivacySettings string   `json:"privacy_settings"`
+	IsActive       bool      `json:"is_active"`
+	LastLogin      time.Time `json:"last_login"`
+	ConfirmationToken string `json:"confirmation_token"`
+	SocialProfiles string    `json:"social_profiles"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+}
 
 // CreateUserData creates a new user_data record in the database
 func CreateUserData(db *sql.DB, userData *UserData) error {
@@ -14,7 +33,7 @@ func CreateUserData(db *sql.DB, userData *UserData) error {
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 		RETURNING id
 	`
-	err := db.QueryRow(query, userData.Username, userData.Description, userData.Email, userData.Phone, userData.Avatar, userData.Status, userData.Role, userData.PasswordHash, userData.DateOfBirth, userData.PrivacySettings, userData.IsActive, userData.LastLogin, userData.ConfirmationToken, userData.SocialProfiles).Scan(&userData.ID)
+	err := db.QueryRow(query, userData.UserName, userData.Description, userData.Email, userData.Phone, userData.AvatarUrl, userData.Status, userData.Role, userData.PasswordHash, userData.DateOfBirth, userData.PrivacySettings, userData.IsActive, userData.LastLogin, userData.ConfirmationToken, userData.SocialProfiles).Scan(&userData.ID)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -54,7 +73,7 @@ func UpdateUserData(db *sql.DB, userData *UserData) error {
 			social_profiles = $15
 		WHERE id = $1
 	`
-	_, err := db.Exec(query, userData.ID, userData.Username, userData.Description, userData.Email, userData.Phone, userData.Avatar, userData.Status, userData.Role, userData.PasswordHash, userData.DateOfBirth, userData.PrivacySettings, userData.IsActive, userData.LastLogin, userData.ConfirmationToken, userData.SocialProfiles)
+	_, err := db.Exec(query, userData.ID, userData.UserName, userData.Description, userData.Email, userData.Phone, userData.AvatarUrl, userData.Status, userData.Role, userData.PasswordHash, userData.DateOfBirth, userData.PrivacySettings, userData.IsActive, userData.LastLogin, userData.ConfirmationToken, userData.SocialProfiles)
 	if err != nil {
 		log.Println(err)
 		return err

@@ -3,5 +3,8 @@
         "GOOS": "windows",
         "CGO_ENABLED": "0",
         "GOARCH": "amd64"
-    }
+    },
+    "cSpell.words": [
+        "Vladislav"
+    ]
 }

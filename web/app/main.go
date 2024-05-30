@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/sessions"
-    "github.com/gin-contrib/sessions/cookie"
+	// "github.com/gin-contrib/sessions"
+    // "github.com/gin-contrib/sessions/cookie"
 )
 
 type Credentials struct {
@@ -27,8 +27,8 @@ func main() {
 	r.LoadHTMLGlob("../templates/*")
 	r.Static("/static", "../static")
 
-	store := cookie.NewStore([]byte("secret"))
-    r.Use(sessions.Sessions("mysession", store))
+	// store := cookie.NewStore([]byte("secret"))
+    // r.Use(sessions.Sessions("mysession", store))
 	r.Use(LoggerMiddleware())
 
 	r.GET("/", GetIndex)
