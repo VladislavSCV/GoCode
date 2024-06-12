@@ -1,4 +1,4 @@
-module github.com/VladislavSCV
+module github.com/VladislavSCV/GoCode
 
 go 1.21.6
 

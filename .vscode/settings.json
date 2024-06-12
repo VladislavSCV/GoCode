@@ -2,7 +2,8 @@
   "go.toolsEnvVars": {
     "GOPATH": "C:\\Users\\VladislavSCV\\go;C:\\Program Files\\protoc-21.11-win64\\bin\\protoc;C:\\Program Files\\goctl-v1.4.5-windows-amd64\\goctl;",
     "GOOS": "windows",
-    "GO111MODULE": "auto"
+    "GO111MODULE": "auto",
+    "GOBIN": "on"
   },
   "cSpell.words": ["Vladislav"]
 }

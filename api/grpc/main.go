@@ -1,13 +1,14 @@
 package main
 
 import (
-    "context"
-    "log"
-    "net"
+	"context"
+	"log"
+	"net"
 
-    "google.golang.org/grpc"
+	"google.golang.org/grpc"
 
-    pb "github.com/VladislavSCV/api/grpc/gen/pb-go/com.user_data"
+	pb "github.com/VladislavSCV/GoCode/api/grpc/gen/pb-go/com.user_data"
+	// "github.com/VladislavSCV/GoCode/migrations"
 )
 
 // server is used to implement pb.UserDataMessageServiceServer.
@@ -52,7 +53,7 @@ func (s *server) UpdateUserDescription(ctx context.Context, in *pb.UpdateUserDes
     return nil, nil
 }
 
-func main() {
+func connectGRPC() {
     lis, err := net.Listen("tcp", ":50051")
     if err != nil {
         log.Fatalf("Failed to listen: %v", err)

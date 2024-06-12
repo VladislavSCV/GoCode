@@ -1,13 +1,12 @@
-package main
+package migrations
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
+    "database/sql"
     "encoding/json"
+    "fmt"
     "io/ioutil"
-
-	_ "github.com/lib/pq"
+    "log"
+    _ "github.com/lib/pq"
 )
 
 type Config struct {
@@ -22,13 +21,13 @@ type Config_db struct {
     Dbname   string `json:"dbname"`
 }
 
-var config Config
-
-var db *sql.DB
-
+var (
+    config Config
+    DB *sql.DB
+)
 
 func init() {
-    jsonFile, err := ioutil.ReadFile("config/secrets/db.json")
+    jsonFile, err := ioutil.ReadFile(`../config/secrets/db.json`)
     if err != nil {
         log.Fatal(err)
     }
@@ -39,17 +38,17 @@ func init() {
     }
 }
 
-func main() {
+func ConnectToDB() {
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
     config.Data_db.Host, config.Data_db.Port, config.Data_db.Username, config.Data_db.Password, config.Data_db.Dbname)
 
-    db, err := sql.Open("postgres", psqlInfo)
+    var err error
+    DB, err = sql.Open("postgres", psqlInfo)
     if err != nil {
         log.Fatal(err)
     }
-    defer db.Close()
 
-    err = db.Ping()
+    err = DB.Ping()
     if err != nil {
         log.Fatal(err)
     }
