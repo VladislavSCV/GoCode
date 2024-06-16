@@ -1,100 +1,169 @@
-syntax="proto3";
+syntax = "proto3";
 
-option go_package="com.user_data";
+option go_package = "com.user_data";
 
 message GetUserDataRequest {
-    string user_id = 1;
+    int64 user_id = 1;
 }
 
 message GetUserDataResponse {
-    string user_id = 1;
+    int64 user_id = 1;
     string username = 2;
     string description = 3;
     string email = 4;
     string phone = 5;
-    string avatar = 6;
+    string avatar_url = 6;
     string status = 7;
+    string role = 8;
+    string password_hash = 9;
+    string date_of_birth = 10;
+    string privacy_settings = 11;
+    bool is_active = 12;
+    string last_login = 13;
+    string confirmation_token = 14;
+    string social_profiles = 15;
+    string created_at = 16;
+    string updated_at = 17;
 }
 
 message UpdateUserDataRequest {
-    string user_id = 1;
+    int64 user_id = 1;
     string username = 2;
     string description = 3;
     string email = 4;
     string phone = 5;
-    string avatar = 6;
+    string avatar_url = 6;
     string status = 7;
+    string role = 8;
+    string password_hash = 9;
+    string date_of_birth = 10;
+    string privacy_settings = 11;
+    bool is_active = 12;
+    string last_login = 13;
+    string confirmation_token = 14;
+    string social_profiles = 15;
+    string created_at = 16;
+    string updated_at = 17;
 }
 
 message UpdateUserDataResponse {
-    string user_id = 1;
+    bool success = 1;
 }
 
 message UpdateUserPasswordRequest {
-    string user_id = 1;
-    string old_password = 2;
-    string new_password = 3;
+    int64 user_id = 1;
+    string new_password = 2;
 }
 
 message UpdateUserPasswordResponse {
-    string user_id = 1;
+    bool success = 1;
 }
 
 message UpdateUserEmailRequest {
-    string user_id = 1;
+    int64 user_id = 1;
     string new_email = 2;
 }
 
 message UpdateUserEmailResponse {
-    string user_id = 1;
+    bool success = 1;
 }
 
 message UpdateUserPhoneRequest {
-    string user_id = 1;
+    int64 user_id = 1;
     string new_phone = 2;
 }
 
 message UpdateUserPhoneResponse {
-    string user_id = 1;
+    bool success = 1;
 }
 
 message UpdateUserStatusRequest {
-    string user_id = 1;
+    int64 user_id = 1;
     string new_status = 2;
 }
 
 message UpdateUserStatusResponse {
-    string user_id = 1;
+    bool success = 1;
 }
 
 message UpdateUserAvatarRequest {
-    string user_id = 1;
-    string new_avatar = 2;
+    int64 user_id = 1;
+    string new_avatar_url = 2;
 }
 
 message UpdateUserAvatarResponse {
-    string user_id = 1;
+    bool success = 1;
 }
 
 message UpdateUserNameRequest {
-    string user_id = 1;
+    int64 user_id = 1;
     string new_username = 2;
 }
 
 message UpdateUserNameResponse {
-    string user_id = 1;
+    bool success = 1;
 }
 
 message UpdateUserDescriptionRequest {
-    string user_id = 1;
+    int64 user_id = 1;
     string new_description = 2;
 }
 
 message UpdateUserDescriptionResponse {
-    string user_id = 1;
+    bool success = 1;
+}
+
+message SignUserDataRequest {
+    int64 user_id = 1;
+    string username = 2;
+    string description = 3;
+    string email = 4;
+    string phone = 5;
+    string avatar_url = 6;
+    string status = 7;
+    string role = 8;
+    string password_hash = 9;
+    string date_of_birth = 10;
+    string privacy_settings = 11;
+    bool is_active = 12;
+    string last_login = 13;
+    string confirmation_token = 14;
+    string social_profiles = 15;
+    string created_at = 16;
+    string updated_at = 17;
+}
+
+message SignUserDataResponse {
+    bool is_accepted = 1;
+}
+
+message LoginUserDataRequest {
+    int64 user_id = 1;
+    string username = 2;
+    string description = 3;
+    string email = 4;
+    string phone = 5;
+    string avatar_url = 6;
+    string status = 7;
+    string role = 8;
+    string password_hash = 9;
+    string date_of_birth = 10;
+    string privacy_settings = 11;
+    bool is_active = 12;
+    string last_login = 13;
+    string confirmation_token = 14;
+    string social_profiles = 15;
+    string created_at = 16;
+    string updated_at = 17;
+}
+
+message IsAcceptedLoginResponse {
+    bool is_accepted = 1;
 }
 
 service UserDataMessageService {
+    rpc Login(LoginUserDataRequest) returns (IsAcceptedLoginResponse);
+    rpc SignUp(SignUserDataRequest) returns (SignUserDataResponse);
     rpc GetUserData(GetUserDataRequest) returns (GetUserDataResponse);
     rpc UpdateUserData(UpdateUserDataRequest) returns (UpdateUserDataResponse);
     rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (UpdateUserPasswordResponse);
@@ -105,4 +174,3 @@ service UserDataMessageService {
     rpc UpdateUserName(UpdateUserNameRequest) returns (UpdateUserNameResponse);
     rpc UpdateUserDescription(UpdateUserDescriptionRequest) returns (UpdateUserDescriptionResponse);
 }
-

@@ -27,7 +27,7 @@ var (
 )
 
 func init() {
-    jsonFile, err := ioutil.ReadFile(`../config/secrets/db.json`)
+    jsonFile, err := ioutil.ReadFile(`C:\Users\VladislavSCV\OneDrive\Desktop\VSC\GO\GoCode\config\secrets\db.json`)
     if err != nil {
         log.Fatal(err)
     }

@@ -11,7 +11,7 @@ var wg sync.WaitGroup
 func main() {
     // Путь к вашим .exe файлам
     exePathtoWebApp := `C:\Users\VladislavSCV\OneDrive\Desktop\VSC\GO\GoCode\cmd\web.exe`
-    exePathtoGRPCService := `C:\Users\VladislavSCV\OneDrive\Desktop\VSC\GO\GoCode\cmd\grpc.exe`
+    exePathtoGRPCService := `C:\Users\VladislavSCV\OneDrive\Desktop\VSC\GO\GoCode\cmd\gRPC_up.exe`
 
     listOfPaths := []string{exePathtoWebApp, exePathtoGRPCService}
 

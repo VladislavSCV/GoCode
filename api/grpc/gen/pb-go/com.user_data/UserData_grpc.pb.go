@@ -22,6 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserDataMessageServiceClient interface {
+	Login(ctx context.Context, in *LoginUserDataRequest, opts ...grpc.CallOption) (*IsAcceptedLoginResponse, error)
+	SignUp(ctx context.Context, in *SignUserDataRequest, opts ...grpc.CallOption) (*SignUserDataResponse, error)
 	GetUserData(ctx context.Context, in *GetUserDataRequest, opts ...grpc.CallOption) (*GetUserDataResponse, error)
 	UpdateUserData(ctx context.Context, in *UpdateUserDataRequest, opts ...grpc.CallOption) (*UpdateUserDataResponse, error)
 	UpdateUserPassword(ctx context.Context, in *UpdateUserPasswordRequest, opts ...grpc.CallOption) (*UpdateUserPasswordResponse, error)
@@ -39,6 +41,24 @@ type userDataMessageServiceClient struct {
 
 func NewUserDataMessageServiceClient(cc grpc.ClientConnInterface) UserDataMessageServiceClient {
 	return &userDataMessageServiceClient{cc}
+}
+
+func (c *userDataMessageServiceClient) Login(ctx context.Context, in *LoginUserDataRequest, opts ...grpc.CallOption) (*IsAcceptedLoginResponse, error) {
+	out := new(IsAcceptedLoginResponse)
+	err := c.cc.Invoke(ctx, "/UserDataMessageService/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userDataMessageServiceClient) SignUp(ctx context.Context, in *SignUserDataRequest, opts ...grpc.CallOption) (*SignUserDataResponse, error) {
+	out := new(SignUserDataResponse)
+	err := c.cc.Invoke(ctx, "/UserDataMessageService/SignUp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userDataMessageServiceClient) GetUserData(ctx context.Context, in *GetUserDataRequest, opts ...grpc.CallOption) (*GetUserDataResponse, error) {
@@ -126,6 +146,8 @@ func (c *userDataMessageServiceClient) UpdateUserDescription(ctx context.Context
 // All implementations should embed UnimplementedUserDataMessageServiceServer
 // for forward compatibility
 type UserDataMessageServiceServer interface {
+	Login(context.Context, *LoginUserDataRequest) (*IsAcceptedLoginResponse, error)
+	SignUp(context.Context, *SignUserDataRequest) (*SignUserDataResponse, error)
 	GetUserData(context.Context, *GetUserDataRequest) (*GetUserDataResponse, error)
 	UpdateUserData(context.Context, *UpdateUserDataRequest) (*UpdateUserDataResponse, error)
 	UpdateUserPassword(context.Context, *UpdateUserPasswordRequest) (*UpdateUserPasswordResponse, error)
@@ -141,6 +163,12 @@ type UserDataMessageServiceServer interface {
 type UnimplementedUserDataMessageServiceServer struct {
 }
 
+func (UnimplementedUserDataMessageServiceServer) Login(context.Context, *LoginUserDataRequest) (*IsAcceptedLoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedUserDataMessageServiceServer) SignUp(context.Context, *SignUserDataRequest) (*SignUserDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
+}
 func (UnimplementedUserDataMessageServiceServer) GetUserData(context.Context, *GetUserDataRequest) (*GetUserDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserData not implemented")
 }
@@ -178,6 +206,42 @@ type UnsafeUserDataMessageServiceServer interface {
 
 func RegisterUserDataMessageServiceServer(s grpc.ServiceRegistrar, srv UserDataMessageServiceServer) {
 	s.RegisterService(&UserDataMessageService_ServiceDesc, srv)
+}
+
+func _UserDataMessageService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginUserDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserDataMessageServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserDataMessageService/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserDataMessageServiceServer).Login(ctx, req.(*LoginUserDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserDataMessageService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignUserDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserDataMessageServiceServer).SignUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserDataMessageService/SignUp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserDataMessageServiceServer).SignUp(ctx, req.(*SignUserDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _UserDataMessageService_GetUserData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -349,6 +413,14 @@ var UserDataMessageService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "UserDataMessageService",
 	HandlerType: (*UserDataMessageServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Login",
+			Handler:    _UserDataMessageService_Login_Handler,
+		},
+		{
+			MethodName: "SignUp",
+			Handler:    _UserDataMessageService_SignUp_Handler,
+		},
 		{
 			MethodName: "GetUserData",
 			Handler:    _UserDataMessageService_GetUserData_Handler,
