@@ -2,8 +2,12 @@ package migrations
 
 import (
 	"database/sql"
+	// "errors"
+	"fmt"
 	"log"
 	"time"
+
+	"github.com/VladislavSCV/GoCode/pkg"
 )
 
 type UserData struct {
@@ -27,27 +31,13 @@ type UserData struct {
 }
 
 // Insert into users table
-func SignUp(db *sql.DB, userData *UserData) error {
+func SignUp(db *sql.DB, UserName, Email, Phone, AvatarUrl string, Status string, Role string, PasswordHash string, DateOfBirth time.Time) error {
 	const query = `
-		INSERT INTO user_data VALUES
-			user_name = $1,
-			description = $2,
-			email = $3,
-			phone = $4,
-			avatar_url = $5,
-			status = $6,
-			role = $7,
-			password_hash = $8,
-			date_of_birth = $9,
-			privacy_settings = $10,
-			is_active = $11,
-			last_login = $12,
-			confirmation_token = $13,
-			social_profiles = $14,
-			updated_at = $15
+		INSERT INTO user_data (username, email, phone, avatar, status, role, password_hash, date_of_birth)
+		VALUES ('$1', '$2', '$3', '$4', '$5', '$6', '$7', '&8');
 
 	`
-	_, err := db.Exec(query, userData.UserName, userData.Description, userData.Email, userData.Phone, userData.AvatarUrl, userData.Status, userData.Role, userData.PasswordHash, userData.DateOfBirth, userData.PrivacySettings, userData.IsActive, userData.LastLogin, userData.ConfirmationToken, userData.SocialProfiles, time.Now())
+	_, err := db.Exec(query, UserName, Email, Phone, AvatarUrl, Status, Role, PasswordHash, DateOfBirth)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -56,13 +46,28 @@ func SignUp(db *sql.DB, userData *UserData) error {
 }
 
 func Login(db *sql.DB, email, password string) (bool, error) {
-	isAccepted := false
-	const query = `SELECT 1 FROM user_data WHERE email = $1 AND password_hash = $2`
-	err := db.QueryRow(query, email, password).Scan(&isAccepted)
+	var isAccepted bool
+	var CheckedPassword string
+	var err error
+
+	CheckPassword, err := pkg.CheckPassword(password)
 	if err != nil {
-		log.Println("ERROR in LOGINING:", err)
 		return false, err
 	}
+
+	if CheckPassword {
+		CheckedPassword, err = pkg.HashFuncPassword(password)
+		if err != nil {
+			return false, fmt.Errorf("Error hashing password: %v", err)
+		}
+	}
+
+	const query = `SELECT 1 FROM user_data WHERE email = $1 AND password_hash = $2`
+	err = db.QueryRow(query, email, CheckedPassword).Scan(&isAccepted)
+	if err != nil {
+		return false, fmt.Errorf("Error during login: %v", err)
+	}
+
 	return isAccepted, nil
 }
 

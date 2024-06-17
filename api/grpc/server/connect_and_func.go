@@ -23,6 +23,33 @@ type server struct {
 	pb.UnimplementedUserDataMessageServiceServer
 }
 
+
+// Login checks if the user is valid and returns a boolean indicating if the
+// login was accepted and an error if there was one.
+func (s *server) Login(ctx context.Context, in *pb.LoginUserDataRequest) (*pb.IsAcceptedLoginResponse, error) {
+	isAccepted, err := migrations.Login(migrations.DB, in.Email, in.PasswordHash)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to login: %v", err)
+	}
+	return &pb.IsAcceptedLoginResponse{IsAccepted: isAccepted}, nil
+}
+
+// SignUp creates a new user in the database and returns a boolean indicating if
+// the sign up was accepted and an error if there was one.
+func (s *server) SignUp(ctx context.Context, in *pb.SignUserDataRequest) (*pb.SignUserDataResponse, error) {
+	dateOfBirth, err := time.Parse(time.RFC3339, in.DateOfBirth.String())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to parse date of birth: %v", err)
+	}
+	err = migrations.SignUp(migrations.DB, in.Username, in.PasswordHash, in.Email, in.Phone, in.AvatarUrl, in.Status, in.Role, dateOfBirth)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to sign up: %v", err)
+	}
+	return &pb.SignUserDataResponse{IsAccepted: true}, nil
+}
+
+
+
 func (s *server) GetUserData(
 	ctx context.Context,
 	in *pb.GetUserDataRequest,
