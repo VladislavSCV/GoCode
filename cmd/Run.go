@@ -9,6 +9,7 @@ import (
 var wg sync.WaitGroup
 
 func main() {
+    // TODO Скрипт для запуска .exe модулей приложения
     // Путь к вашим .exe файлам
     exePathtoWebApp := ``
     exePathtoGRPCService := ``
