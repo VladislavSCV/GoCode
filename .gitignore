@@ -1,8 +1,5 @@
-internal
-test
-# Секретные файлы
-/config/secrets/
-
+internal/config/
+test/
 # Файлы окружения
 .env
 .env.local
