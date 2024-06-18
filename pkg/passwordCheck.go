@@ -37,6 +37,8 @@ func CheckPassword(password string) (bool, error) {
 		return false, errors.New("password must contain at least one uppercase letter")
 	}
 
+	
+
 	// Check if password contains at least one lowercase letter
 	if !regexp.MustCompile(`[a-z]`).MatchString(password) {
 		return false, errors.New("password must contain at least one lowercase letter")

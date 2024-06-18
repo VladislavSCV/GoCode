@@ -11,11 +11,11 @@ import (
 	"google.golang.org/grpc/status"
 
 	pb "github.com/VladislavSCV/GoCode/api/grpc/gen/pb-go/com.user_data"
-	"github.com/VladislavSCV/GoCode/migrations"
+	"github.com/VladislavSCV/GoCode/internal/db"
 )
 
 func init() {
-	migrations.ConnectToDB()
+	db.ConnectToDB()
 }
 
 // server is used to implement pb.UserDataMessageServiceServer.
@@ -27,7 +27,7 @@ type server struct {
 // Login checks if the user is valid and returns a boolean indicating if the
 // login was accepted and an error if there was one.
 func (s *server) Login(ctx context.Context, in *pb.LoginUserDataRequest) (*pb.IsAcceptedLoginResponse, error) {
-	isAccepted, err := migrations.Login(migrations.DB, in.Email, in.PasswordHash)
+	isAccepted, err := db.Login(db.DB, in.Email, in.PasswordHash)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to login: %v", err)
 	}
@@ -37,11 +37,11 @@ func (s *server) Login(ctx context.Context, in *pb.LoginUserDataRequest) (*pb.Is
 // SignUp creates a new user in the database and returns a boolean indicating if
 // the sign up was accepted and an error if there was one.
 func (s *server) SignUp(ctx context.Context, in *pb.SignUserDataRequest) (*pb.SignUserDataResponse, error) {
-	dateOfBirth, err := time.Parse(time.RFC3339, in.DateOfBirth.String())
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed to parse date of birth: %v", err)
-	}
-	err = migrations.SignUp(migrations.DB, in.Username, in.PasswordHash, in.Email, in.Phone, in.AvatarUrl, in.Status, in.Role, dateOfBirth)
+	// dateOfBirth, err := time.Parse(time.RFC3339, in.DateOfBirth)
+	// if err != nil {
+	// 	return nil, status.Errorf(codes.Internal, "Failed to parse date of birth: %v", err)
+	// }
+	err := db.SignUp(db.DB, in.Username, in.Email, in.Phone, in.AvatarUrl, in.Role, in.PasswordHash, in.DateOfBirth)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to sign up: %v", err)
 	}
@@ -49,13 +49,9 @@ func (s *server) SignUp(ctx context.Context, in *pb.SignUserDataRequest) (*pb.Si
 }
 
 
-
-func (s *server) GetUserData(
-	ctx context.Context,
-	in *pb.GetUserDataRequest,
-) (*pb.GetUserDataResponse, error) {
+func (s *server) GetUserData(ctx context.Context, in *pb.GetUserDataRequest) (*pb.GetUserDataResponse, error) {
 	userId := in.GetUserId()
-	userData, err := migrations.GetUserData(migrations.DB, int(userId))
+	userData, err := db.GetUserData(db.DB, int(userId))
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
@@ -96,7 +92,7 @@ func (s *server) UpdateUserData(
 	ll, _ := time.Parse(time.RFC3339, in.LastLogin)
 	ca, _ := time.Parse(time.RFC3339, in.CreatedAt)
 	ua, _ := time.Parse(time.RFC3339, in.UpdatedAt)
-	userData := &migrations.UserData{
+	userData := &db.UserData{
 		ID:               int(in.GetUserId()),
 		UserName:         in.GetUsername(),
 		Description:      in.GetDescription(),
@@ -116,7 +112,7 @@ func (s *server) UpdateUserData(
 		UpdatedAt:         ua,
 	}
 
-	err := migrations.UpdateUserData(migrations.DB, userData)
+	err := db.UpdateUserData(db.DB, userData)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user data: %v", err)
 	}
@@ -127,7 +123,7 @@ func (s *server) UpdateUserData(
 }
 
 func (s *server) UpdateUserPassword(ctx context.Context, in *pb.UpdateUserPasswordRequest) (*pb.UpdateUserPasswordResponse, error) {
-	err := migrations.UpdateUserPassword(migrations.DB, int(in.GetUserId()), in.GetNewPassword())
+	err := db.UpdateUserPassword(db.DB, int(in.GetUserId()), in.GetNewPassword())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user password: %v", err)
 	}
@@ -137,7 +133,7 @@ func (s *server) UpdateUserPassword(ctx context.Context, in *pb.UpdateUserPasswo
 }
 
 func (s *server) UpdateUserEmail(ctx context.Context, in *pb.UpdateUserEmailRequest) (*pb.UpdateUserEmailResponse, error) {
-	err := migrations.UpdateUserEmail(migrations.DB, int(in.GetUserId()), in.GetNewEmail())
+	err := db.UpdateUserEmail(db.DB, int(in.GetUserId()), in.GetNewEmail())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user email: %v", err)
 	}
@@ -147,7 +143,7 @@ func (s *server) UpdateUserEmail(ctx context.Context, in *pb.UpdateUserEmailRequ
 }
 
 func (s *server) UpdateUserPhone(ctx context.Context, in *pb.UpdateUserPhoneRequest) (*pb.UpdateUserPhoneResponse, error) {
-	err := migrations.UpdateUserPhone(migrations.DB, int(in.GetUserId()), in.GetNewPhone())
+	err := db.UpdateUserPhone(db.DB, int(in.GetUserId()), in.GetNewPhone())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user phone: %v", err)
 	}
@@ -157,7 +153,7 @@ func (s *server) UpdateUserPhone(ctx context.Context, in *pb.UpdateUserPhoneRequ
 }
 
 func (s *server) UpdateUserStatus(ctx context.Context, in *pb.UpdateUserStatusRequest) (*pb.UpdateUserStatusResponse, error) {
-	err := migrations.UpdateUserStatus(migrations.DB, int(in.GetUserId()), in.GetNewStatus())
+	err := db.UpdateUserStatus(db.DB, int(in.GetUserId()), in.GetNewStatus())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user status: %v", err)
 	}
@@ -167,7 +163,7 @@ func (s *server) UpdateUserStatus(ctx context.Context, in *pb.UpdateUserStatusRe
 }
 
 func (s *server) UpdateUserAvatar(ctx context.Context, in *pb.UpdateUserAvatarRequest) (*pb.UpdateUserAvatarResponse, error) {
-	err := migrations.UpdateUserAvatar(migrations.DB, int(in.GetUserId()), in.GetNewAvatarUrl())
+	err := db.UpdateUserAvatar(db.DB, int(in.GetUserId()), in.GetNewAvatarUrl())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user avatar: %v", err)
 	}
@@ -177,7 +173,7 @@ func (s *server) UpdateUserAvatar(ctx context.Context, in *pb.UpdateUserAvatarRe
 }
 
 func (s *server) UpdateUserName(ctx context.Context, in *pb.UpdateUserNameRequest,) (*pb.UpdateUserNameResponse, error) {
-	err := migrations.UpdateUserName(migrations.DB, int(in.GetUserId()), in.GetNewUsername())
+	err := db.UpdateUserName(db.DB, int(in.GetUserId()), in.GetNewUsername())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user name: %v", err)
 	}
@@ -187,7 +183,7 @@ func (s *server) UpdateUserName(ctx context.Context, in *pb.UpdateUserNameReques
 }
 
 func (s *server) UpdateUserDescription(ctx context.Context, in *pb.UpdateUserDescriptionRequest) (*pb.UpdateUserDescriptionResponse, error) {
-	err := migrations.UpdateUserDescription(migrations.DB, int(in.GetUserId()), in.GetNewDescription())
+	err := db.UpdateUserDescription(db.DB, int(in.GetUserId()), in.GetNewDescription())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user description: %v", err)
 	}

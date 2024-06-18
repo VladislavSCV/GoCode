@@ -1,3 +1,25 @@
 internal
-config/secrets
 test
+# Секретные файлы
+/config/secrets/
+
+# Файлы окружения
+.env
+.env.local
+
+# Файлы сертификатов и ключей
+*.pem
+*.key
+
+# Локальные настройки
+.idea/
+.vscode/
+
+# Артефакты сборки
+*.o
+*.obj
+*.exe
+
+# Автоматически создаваемые файлы
+.gradle/
+node_modules/

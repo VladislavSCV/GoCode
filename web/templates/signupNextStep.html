@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - GoCode Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/signup.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">Остался всего лишь один шаг!</div>
+        <form class="form" action="/signup/step2" method="post">
+            <label for="username">Имя пользователя:</label>
+            <input class="input" type="text" id="username" name="username" placeholder="Введите имя пользователя*" required>
+            
+            <label for="avatar_url">URL ссылки на ваше фото:</label>
+            <input class="input" type="text" id="avatar_url" name="avatar_url" placeholder="Вставьте URL ссылки на ваше фото">
+            
+            <label for="role">Роль или позиция:</label>
+            <input class="input" type="text" id="role" name="role" placeholder="Введите роль или позицию" required>
+            
+            <label for="date_of_birth">Дата рождения:</label>
+            <input class="input" type="date" id="date_of_birth" name="date_of_birth">
+            
+            <button class="button" type="submit">Зарегистрироваться</button>
+        </form>
+        
+        <div class="footer">
+            © 2024 GoCode Challenge. Все права защищены.
+        </div>
+    </div>
+</body>
+</html>

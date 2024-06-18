@@ -113,21 +113,14 @@ message UpdateUserDescriptionResponse {
     bool success = 1;
 }
 
-message Date {
-    int32 year = 1;
-    int32 month = 2;
-    int32 day = 3;
-}
-
 message SignUserDataRequest {
     string username = 1;
     string email = 2;
     string phone = 3;
     string avatar_url = 4;
-    string status = 5;
-    string role = 6;
-    string password_hash = 7;
-    Date date_of_birth = 8;
+    string role = 5;
+    string password_hash = 6;
+    string date_of_birth = 7;
 }
 
 message SignUserDataResponse {

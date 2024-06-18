@@ -10,13 +10,13 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">Твори, люби, мечтай!</div>
-        <form class="form" action="/PostSign" method="POST">
-            <input class="input" type="text" name="username" placeholder="Имя пользователя" required>
+        <div class="header">Давай познакомимся?</div>
+        <form class="form" action="/signup/step1" method="post">
             <input class="input" type="email" name="email" placeholder="Электронная почта" required>
+            <input class="input" type="tel" name="phone" placeholder="Телефон" required>
             <input class="input" type="password" name="password" placeholder="Пароль" required>
-            <input class="input" type="text" name="phone" placeholder="Телефон" required>
-            <button class="button" type="submit">Зарегистрироваться</button>
+            
+            <button class="button" type="submit">Далее</button>
         </form>
         <div class="oauth">
             <span>или войдите с помощью:</span>

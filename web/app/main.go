@@ -1,41 +1,39 @@
 package main
 
-import (
-	// "fmt"
 
+import (
 	"github.com/gin-gonic/gin"
-	// "github.com/gin-contrib/sessions"
-    // "github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 )
 
 
-
-
-
-type Credentials struct {
-    Username string `json:"username"`
-    Password string `json:"password"`
-}
-
 func main() {
 	r := gin.Default()
+	// Создаем хранилище сессий на основе файлов cookie
+    store := cookie.NewStore([]byte("secret"))
 	r.LoadHTMLGlob(`..\templates/*`)
 	r.Static("/static", "../static")
 
 	r.Use(LoggerMiddleware())
+	// Используем middleware для сессий
+    r.Use(sessions.Sessions("mysession", store))
+
 
 	r.GET("/", GetIndex)
-	r.GET("/SignUp", GetSignUP)
-	r.POST("/PostSign", PostSign)
-	r.GET("/Login", GetLogin)
-	r.GET("/GoCode", GetMainPage)
-	r.GET("/Task", GetTask)
-	r.POST("/Task", PostTask)
-	r.GET("/Profile", GetProfile)
-	r.GET("/Resourses", GetResourses)
-	r.GET("/Catalog", GetCatalog)
-	r.POST("/Catalog", PostCatalog)
+	r.GET("/signup", GetSignUP)
+	r.GET("/signupnextstep", GetSignUpNextStep)
+	r.POST("/signup/step1", SignUpSaveENP)
+	r.POST("/signup/step2", PostSign)
+	r.GET("/login", GetLogin)
+	r.GET("/main", GetMainPage)
+	r.GET("/task", GetTask)
+	r.POST("/task", PostTask)
+	r.GET("/profile", GetProfile)
+	r.GET("/resourses", GetResourses)
+	r.GET("/catalog", GetCatalog)
+	r.POST("/catalog", PostCatalog)
 
+	
 	r.Run(":8000")
 }
-
