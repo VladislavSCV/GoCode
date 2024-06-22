@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	// "time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -31,6 +30,11 @@ type FormDataSignUpSecondStep struct {
     AvatarUrl      string `form:"avatar_url"`
     Role           string `form:"role"`
     DateOfBirth    string `form:"date_of_birth"`
+}
+
+type FormDataLogin struct {
+	UserEmail string `form:"email"`
+	UserPassword string `form:"password"`
 }
 
 
@@ -146,19 +150,43 @@ func PostSign(c *gin.Context) {
 
     log.Println(r.String())
 
+	session.Set("name", dataNURD.Username)
+	session.Save()
+
     c.HTML(http.StatusOK, "main.html", gin.H{
         "status": http.StatusOK,
     })
 }
 
-
-
-
-
 func GetLogin(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.html", gin.H{
 		"status": http.StatusOK,
 	})
+}
+
+func PostLogin(c *gin.Context) {
+	var dataLogin FormDataLogin
+	if err := c.Bind(&dataLogin); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	
+	r, err := grpcFunc.Login(context.Background(), &pb.LoginUserDataRequest{
+		Email: dataLogin.UserEmail,
+		PasswordHash: dataLogin.UserPassword,
+	})
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	log.Println(r.String())
+	
+	if r != nil {
+		c.Redirect(http.StatusFound, "http://127.0.0.1:8000/main")
+	} else {
+		c.Redirect(http.StatusFound, "http://127.0.0.1:8000/signup")
+	}
 }
 
 func GetMainPage(c *gin.Context) {
@@ -197,8 +225,10 @@ func CheckSolution(code string) bool {
 }
 
 func GetProfile(c *gin.Context) {
+	session := sessions.Default(c)
+    name := session.Get("name")
 	c.HTML(http.StatusOK, "profile.html", gin.H{
-		"status": http.StatusOK,
+		"username": name,
 	})
 }
 

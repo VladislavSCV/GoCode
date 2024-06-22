@@ -13,6 +13,11 @@ func shaHashing(input string) string {
 	return hex.EncodeToString(sha256Hash[:])
 }
 
+func CheckAndHashPassword(password string) (string, error) {
+	CheckPassword(password)
+	return HashFuncPassword(password)
+}
+
 
 func HashFuncPassword(password string) (string, error) {
 	// todo: implement password hashing

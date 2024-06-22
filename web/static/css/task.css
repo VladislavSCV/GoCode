@@ -11,6 +11,17 @@ body {
     padding: 20px;
 }
 
+header {
+    background-color: #ffffff;
+    padding: 15px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .container {
     width: 90%;
     max-width: 800px;

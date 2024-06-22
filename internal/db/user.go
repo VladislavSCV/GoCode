@@ -30,6 +30,22 @@ type UserData struct {
 	UpdatedAt        time.Time `json:"updated_at"`
 }
 
+type UserDataLoginResp struct {
+	UserName         string    `json:"user_name"`
+	Description      string    `json:"description"`
+	Email            string    `json:"email"`
+	Phone            string    `json:"phone"`
+	AvatarUrl        string    `json:"avatar_url"`
+	Status           string    `json:"status"`
+	Role             string    `json:"role"`
+	DateOfBirth      time.Time `json:"date_of_birth"`
+	PrivacySettings  string    `json:"privacy_settings"`
+	IsActive         bool      `json:"is_active"`
+	LastLogin        time.Time `json:"last_login"`
+	ConfirmationToken string   `json:"confirmation_token"`
+	SocialProfiles   string    `json:"social_profiles"`
+}
+
 // Insert into users table
 func SignUp(db *sql.DB, UserName, Email, Phone, AvatarUrl string, Role string, PasswordHash string, DateOfBirth string) error {
 	const query = `
@@ -44,30 +60,41 @@ func SignUp(db *sql.DB, UserName, Email, Phone, AvatarUrl string, Role string, P
 	return nil
 }
 
-func Login(db *sql.DB, email, password string) (bool, error) {
-	var isAccepted bool
-	var CheckedPassword string
-	var err error
-
-	CheckPassword, err := pkg.CheckPassword(password)
-	if err != nil {
-		return false, err
+func Login(db *sql.DB, email, password string) (*UserDataLoginResp, error) {
+	if db == nil {
+		return nil, fmt.Errorf("db cannot be nil")
 	}
 
-	if CheckPassword {
-		CheckedPassword, err = pkg.HashFuncPassword(password)
-		if err != nil {
-			return false, fmt.Errorf("Error hashing password: %v", err)
+	checkedPassword, err := pkg.CheckAndHashPassword(password)
+	if err != nil {
+		return nil, fmt.Errorf("error checking or hashing password: %v", err)
+	}
+
+	const query = `SELECT  COALESCE(username, ''), COALESCE(description, ''), email, phone, avatar, COALESCE(status, ''), 
+	role, COALESCE(date_of_birth::timestamp,'1970-01-01 00:00:00'), COALESCE(privacy_settings::text, ''), is_active, 
+	COALESCE(last_login::timestamp, '1970-01-01 00:00:00'), COALESCE(confirmation_token::text, ''), COALESCE(social_profiles::text, '') FROM user_data WHERE email = $1 AND password_hash = $2`
+	var userDataLogin UserDataLoginResp
+	err = db.QueryRow(query, email, checkedPassword).Scan(
+		&userDataLogin.UserName, &userDataLogin.Description, &userDataLogin.Email, &userDataLogin.Phone, &userDataLogin.AvatarUrl, &userDataLogin.Status,
+		&userDataLogin.Role, &userDataLogin.DateOfBirth, &userDataLogin.PrivacySettings, &userDataLogin.IsActive,
+		&userDataLogin.LastLogin, &userDataLogin.ConfirmationToken, &userDataLogin.SocialProfiles,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
+		return nil, fmt.Errorf("error during login: %v", err)
 	}
 
-	const query = `SELECT 1 FROM user_data WHERE email = $1 AND password_hash = $2`
-	err = db.QueryRow(query, email, CheckedPassword).Scan(&isAccepted)
-	if err != nil {
-		return false, fmt.Errorf("Error during login: %v", err)
-	}
+	return &userDataLogin, nil
+}
 
-	return isAccepted, nil
+func UpdateLastActiveAt(db *sql.DB, userID int) error {
+    _, err := db.Exec("UPDATE user_data SET last_active_at = $1 WHERE id = $2", time.Now(), userID)
+    if err != nil {
+        return fmt.Errorf("failed to update last_active_at: %v", err)
+    }
+    return nil
 }
 
 // GetUserData retrieves a user_data record from the database

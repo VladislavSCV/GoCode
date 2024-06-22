@@ -27,11 +27,28 @@ type server struct {
 // Login checks if the user is valid and returns a boolean indicating if the
 // login was accepted and an error if there was one.
 func (s *server) Login(ctx context.Context, in *pb.LoginUserDataRequest) (*pb.IsAcceptedLoginResponse, error) {
-	isAccepted, err := db.Login(db.DB, in.Email, in.PasswordHash)
+	userData, err := db.Login(db.DB, in.Email, in.PasswordHash)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to login: %v", err)
 	}
-	return &pb.IsAcceptedLoginResponse{IsAccepted: isAccepted}, nil
+	if userData == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "Invalid credentials")
+	}
+	return &pb.IsAcceptedLoginResponse{
+		UserName:         userData.UserName,
+		Description:      userData.Description,
+		Email:            userData.Email,
+		Phone:            userData.Phone,
+		AvatarUrl:        userData.AvatarUrl,
+		Status:           userData.Status,
+		Role:             userData.Role,
+		DateOfBirth:      userData.DateOfBirth.Format(time.RFC3339),
+		PrivacySettings:  userData.PrivacySettings,
+		IsActive:         userData.IsActive,
+		LastLogin:        userData.LastLogin.Format(time.RFC3339),
+		ConfirmationToken: userData.ConfirmationToken,
+		SocialProfiles:    userData.SocialProfiles,
+	}, nil
 }
 
 // SignUp creates a new user in the database and returns a boolean indicating if

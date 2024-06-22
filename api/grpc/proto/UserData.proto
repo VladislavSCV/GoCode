@@ -133,8 +133,21 @@ message LoginUserDataRequest {
 }
 
 message IsAcceptedLoginResponse {
-    bool is_accepted = 1;
+    string UserName = 1;
+    string Description = 2;
+    string Email = 3;
+    string Phone = 4;
+    string AvatarUrl = 5;
+    string Status = 6;
+    string Role = 7;
+    string DateOfBirth = 8;
+    string PrivacySettings = 9;
+    bool IsActive = 10;
+    string LastLogin = 11;
+    string ConfirmationToken = 12;
+    string SocialProfiles = 13;
 }
+
 
 service UserDataMessageService {
     rpc Login(LoginUserDataRequest) returns (IsAcceptedLoginResponse);

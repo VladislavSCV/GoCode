@@ -8,21 +8,9 @@
     <link rel="stylesheet" href="../static/css/login.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">GoCode Challenge</div>
-            <div class="menu">
-                <a href="/Profile">Профиль</a>
-                <a href="/Task">Задачи</a>
-                <a href="/Resourses">Ресурсы</a>
-                <a href="#contact">Контакты</a>
-                <a href="#faq">FAQ</a>
-            </div>
-        </nav>
-    </header>
     <div class="container">
         <div class="header">Вход - GoCode Challenge</div>
-        <form class="form" action="login_handler.php" method="POST">
+        <form class="form" action="/PostLogin" method="post">
             <input class="input" type="email" name="email" placeholder="Электронная почта" required>
             <input class="input" type="password" name="password" placeholder="Пароль" required>
             <button class="button" type="submit">Войти</button>

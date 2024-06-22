@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/sessions"
@@ -26,6 +25,7 @@ func main() {
 	r.POST("/signup/step1", SignUpSaveENP)
 	r.POST("/signup/step2", PostSign)
 	r.GET("/login", GetLogin)
+	r.POST("/PostLogin", PostLogin)
 	r.GET("/main", GetMainPage)
 	r.GET("/task", GetTask)
 	r.POST("/task", PostTask)
@@ -34,6 +34,5 @@ func main() {
 	r.GET("/catalog", GetCatalog)
 	r.POST("/catalog", PostCatalog)
 
-	
 	r.Run(":8000")
 }

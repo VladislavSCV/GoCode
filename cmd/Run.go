@@ -11,10 +11,10 @@ var wg sync.WaitGroup
 func main() {
     // TODO Скрипт для запуска .exe модулей приложения
     // Путь к вашим .exe файлам
-    exePathtoWebApp := ``
-    exePathtoGRPCService := ``
+    // exePathtoWebApp := ``
+    exePathtoGRPCService := `C:\Users\VladislavSCV\OneDrive\Desktop\VSC\GO\GoCode\cmd\grpc\serverGRPC.exe`
 
-    listOfPaths := []string{exePathtoWebApp, exePathtoGRPCService}
+    listOfPaths := []string{exePathtoGRPCService}
 
     // Добавляем к счетчику количество горутин
     wg.Add(len(listOfPaths))
