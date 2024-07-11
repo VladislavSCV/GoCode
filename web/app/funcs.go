@@ -8,14 +8,15 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
 	pb "github.com/VladislavSCV/GoCode/api/grpc/gen/pb-go/com.user_data"
+	"github.com/VladislavSCV/GoCode/internal/db/redis"
 	"github.com/VladislavSCV/GoCode/pkg"
 )
 
 var (
+	ctx              = context.Background()
 	conn, errConGRPC = grpc.Dial(":50051", grpc.WithInsecure())
 	grpcFunc         = pb.NewUserDataMessageServiceClient(conn)
 )
@@ -89,11 +90,9 @@ func SignUpSaveENP(c *gin.Context) {
 		}
 	}
 
-	session := sessions.Default(c)
-	session.Set("email", UserEmail)
-	session.Set("password", HashedPassw)
-	session.Set("phone", UserPhone)
-	session.Save()
+	redis.SetData("email", UserEmail)
+	redis.SetData("password", HashedPassw)
+	redis.SetData("phone", UserPhone)
 
 	// Redirect with appropriate status code
 	c.Redirect(http.StatusFound, "/signupnextstep")
@@ -106,10 +105,18 @@ func PostSign(c *gin.Context) {
 		return
 	}
 
-	session := sessions.Default(c)
-	emailInterface := session.Get("email")
-	passwordInterface := session.Get("password")
-	phoneInterface := session.Get("phone")
+	emailInterface, err := redis.GetData("email")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	passwordInterface, err := redis.GetData("password")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	phoneInterface, err := redis.GetData("phone")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
 
 	if emailInterface == nil || passwordInterface == nil || phoneInterface == nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -150,8 +157,7 @@ func PostSign(c *gin.Context) {
 
 	log.Println(r.String())
 
-	session.Set("name", dataNURD.Username)
-	session.Save()
+	redis.SetData("name", dataNURD.Username)
 
 	c.HTML(http.StatusOK, "main.html", gin.H{
 		"status": http.StatusOK,
@@ -181,21 +187,19 @@ func PostLogin(c *gin.Context) {
 	}
 
 	log.Println(r.String())
-	session := sessions.Default(c)
-	session.Set("description", r.Description)
-	session.Set("name", r.UserName)
-	session.Set("email", r.Email)
-	session.Set("phone", r.Phone)
-	session.Set("avatar_url", r.AvatarUrl)
-	session.Set("status", r.Status)
-	session.Set("role", r.Role)
-	session.Set("date_of_birth", r.DateOfBirth)
-	session.Set("privacy_settings", r.PrivacySettings)
-	session.Set("is_active", r.IsActive)
-	session.Set("last_login", r.LastLogin)
-	session.Set("confirmation_token", r.ConfirmationToken)
-	session.Set("social_profiles", r.SocialProfiles)
-	session.Save()
+	redis.SetData("description", r.Description)
+	redis.SetData("name", r.UserName)
+	redis.SetData("email", r.Email)
+	redis.SetData("phone", r.Phone)
+	redis.SetData("avatar_url", r.AvatarUrl)
+	redis.SetData("status", r.Status)
+	redis.SetData("role", r.Role)
+	redis.SetData("date_of_birth", r.DateOfBirth)
+	redis.SetData("privacy_settings", r.PrivacySettings)
+	redis.SetData("is_active", r.IsActive)
+	redis.SetData("last_login", r.LastLogin)
+	redis.SetData("confirmation_token", r.ConfirmationToken)
+	redis.SetData("social_profiles", r.SocialProfiles)
 
 	if r != nil {
 		c.Redirect(http.StatusFound, "http://127.0.0.1:8000/main")
@@ -240,18 +244,63 @@ func CheckSolution(code string) bool {
 }
 
 func GetProfile(c *gin.Context) {
-	session := sessions.Default(c)
+	username, err := redis.GetData("name")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	description, err := redis.GetData("description")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	email, err := redis.GetData("email")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	phone, err := redis.GetData("phone")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	avatarUrl, err := redis.GetData("avatar_url")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	status, err := redis.GetData("status")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	role, err := redis.GetData("role")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	dateOfBirth, err := redis.GetData("date_of_birth")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	isActive, err := redis.GetData("is_active")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	lastLogin, err := redis.GetData("last_login")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	socialProfiles, err := redis.GetData("social_profiles")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	
 	c.HTML(http.StatusOK, "profile.html", gin.H{
-		"username":        session.Get("name"),
-		"email":           session.Get("email"),
-		"phone":           session.Get("phone"),
-		"avatar_url":      session.Get("avatar_url"),
-		"status":          session.Get("status"),
-		"role":            session.Get("role"),
-		"date_of_birth":   session.Get("date_of_birth"),
-		"is_active":       session.Get("is_active"),
-		"last_login":      session.Get("last_login"),
-		"social_profiles": session.Get("social_profiles"),
+		"username":        username,
+		"description": 	   description,
+		"email":           email,
+		"phone":           phone,
+		"avatar_url":      avatarUrl,
+		"status":          status,
+		"role":            role,
+		"date_of_birth":   dateOfBirth,
+		"is_active":       isActive,
+		"last_login":      lastLogin,
+		"social_profiles": socialProfiles,
 	})
 }
 
