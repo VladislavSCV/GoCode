@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 
+	"google.golang.org/grpc"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
 
 	pb "github.com/VladislavSCV/GoCode/api/grpc/gen/pb-go/com.user_data"
 	"github.com/VladislavSCV/GoCode/pkg"
@@ -26,17 +27,16 @@ type FormDataSignUpFirstStep struct {
 }
 
 type FormDataSignUpSecondStep struct {
-    Username       string `form:"username"`
-    AvatarUrl      string `form:"avatar_url"`
-    Role           string `form:"role"`
-    DateOfBirth    string `form:"date_of_birth"`
+	Username    string `form:"username"`
+	AvatarUrl   string `form:"avatar_url"`
+	Role        string `form:"role"`
+	DateOfBirth string `form:"date_of_birth"`
 }
 
 type FormDataLogin struct {
-	UserEmail string `form:"email"`
+	UserEmail    string `form:"email"`
 	UserPassword string `form:"password"`
 }
-
 
 func init() {
 	if errConGRPC != nil {
@@ -100,62 +100,62 @@ func SignUpSaveENP(c *gin.Context) {
 }
 
 func PostSign(c *gin.Context) {
-    var dataNURD FormDataSignUpSecondStep
-    if err := c.Bind(&dataNURD); err != nil {
-        c.AbortWithError(http.StatusBadRequest, err)
-        return
-    }
+	var dataNURD FormDataSignUpSecondStep
+	if err := c.Bind(&dataNURD); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 
-    session := sessions.Default(c)
-    emailInterface := session.Get("email")
-    passwordInterface := session.Get("password")
-    phoneInterface := session.Get("phone")
+	session := sessions.Default(c)
+	emailInterface := session.Get("email")
+	passwordInterface := session.Get("password")
+	phoneInterface := session.Get("phone")
 
-    if emailInterface == nil || passwordInterface == nil || phoneInterface == nil {
-        c.AbortWithStatus(http.StatusInternalServerError)
-        return
-    }
+	if emailInterface == nil || passwordInterface == nil || phoneInterface == nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
-    UserEmail, emailOK := emailInterface.(string)
-    UserPassword, passwordOK := passwordInterface.(string)
-    UserPhone, phoneOK := phoneInterface.(string)
+	UserEmail, emailOK := emailInterface.(string)
+	UserPassword, passwordOK := passwordInterface.(string)
+	UserPhone, phoneOK := phoneInterface.(string)
 
-    if !emailOK || !passwordOK || !phoneOK {
-        c.AbortWithStatus(http.StatusInternalServerError)
-        return
-    }
+	if !emailOK || !passwordOK || !phoneOK {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
-    log.Printf("Sending gRPC request: %+v", &pb.SignUserDataRequest{
-        Username:     dataNURD.Username,
-        Email:        UserEmail,
-        Phone:        UserPhone,
-        AvatarUrl:    dataNURD.AvatarUrl,
-        Role:         dataNURD.Role,
-        PasswordHash: UserPassword,
-        DateOfBirth:  dataNURD.DateOfBirth,
-    })
+	log.Printf("Sending gRPC request: %+v", &pb.SignUserDataRequest{
+		Username:     dataNURD.Username,
+		Email:        UserEmail,
+		Phone:        UserPhone,
+		AvatarUrl:    dataNURD.AvatarUrl,
+		Role:         dataNURD.Role,
+		PasswordHash: UserPassword,
+		DateOfBirth:  dataNURD.DateOfBirth,
+	})
 
-    r, err := grpcFunc.SignUp(context.Background(), &pb.SignUserDataRequest{
-        Username:     dataNURD.Username,
-        Email:        UserEmail,
-        Phone:        UserPhone,
-        AvatarUrl:    dataNURD.AvatarUrl,
-        Role:         dataNURD.Role,
-        PasswordHash: UserPassword,
-        DateOfBirth:  dataNURD.DateOfBirth,
-    })
-    if err != nil {
-        log.Fatalf("could not sign up: %v", err)
-    }
+	r, err := grpcFunc.SignUp(context.Background(), &pb.SignUserDataRequest{
+		Username:     dataNURD.Username,
+		Email:        UserEmail,
+		Phone:        UserPhone,
+		AvatarUrl:    dataNURD.AvatarUrl,
+		Role:         dataNURD.Role,
+		PasswordHash: UserPassword,
+		DateOfBirth:  dataNURD.DateOfBirth,
+	})
+	if err != nil {
+		log.Fatalf("could not sign up: %v", err)
+	}
 
-    log.Println(r.String())
+	log.Println(r.String())
 
 	session.Set("name", dataNURD.Username)
 	session.Save()
 
-    c.HTML(http.StatusOK, "main.html", gin.H{
-        "status": http.StatusOK,
-    })
+	c.HTML(http.StatusOK, "main.html", gin.H{
+		"status": http.StatusOK,
+	})
 }
 
 func GetLogin(c *gin.Context) {
@@ -170,9 +170,9 @@ func PostLogin(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	
+
 	r, err := grpcFunc.Login(context.Background(), &pb.LoginUserDataRequest{
-		Email: dataLogin.UserEmail,
+		Email:        dataLogin.UserEmail,
 		PasswordHash: dataLogin.UserPassword,
 	})
 	if err != nil {
@@ -181,7 +181,22 @@ func PostLogin(c *gin.Context) {
 	}
 
 	log.Println(r.String())
-	
+	session := sessions.Default(c)
+	session.Set("description", r.Description)
+	session.Set("name", r.UserName)
+	session.Set("email", r.Email)
+	session.Set("phone", r.Phone)
+	session.Set("avatar_url", r.AvatarUrl)
+	session.Set("status", r.Status)
+	session.Set("role", r.Role)
+	session.Set("date_of_birth", r.DateOfBirth)
+	session.Set("privacy_settings", r.PrivacySettings)
+	session.Set("is_active", r.IsActive)
+	session.Set("last_login", r.LastLogin)
+	session.Set("confirmation_token", r.ConfirmationToken)
+	session.Set("social_profiles", r.SocialProfiles)
+	session.Save()
+
 	if r != nil {
 		c.Redirect(http.StatusFound, "http://127.0.0.1:8000/main")
 	} else {
@@ -226,9 +241,17 @@ func CheckSolution(code string) bool {
 
 func GetProfile(c *gin.Context) {
 	session := sessions.Default(c)
-    name := session.Get("name")
 	c.HTML(http.StatusOK, "profile.html", gin.H{
-		"username": name,
+		"username":        session.Get("name"),
+		"email":           session.Get("email"),
+		"phone":           session.Get("phone"),
+		"avatar_url":      session.Get("avatar_url"),
+		"status":          session.Get("status"),
+		"role":            session.Get("role"),
+		"date_of_birth":   session.Get("date_of_birth"),
+		"is_active":       session.Get("is_active"),
+		"last_login":      session.Get("last_login"),
+		"social_profiles": session.Get("social_profiles"),
 	})
 }
 
@@ -238,9 +261,34 @@ func GetResourses(c *gin.Context) {
 	})
 }
 
+type Task struct {
+	Title       string `json:"title" form:"title"`
+	Description string `json:"description" form:"description"`
+	Difficulty  string `json:"difficulty" form:"difficulty"`
+	Category    string `json:"category" form:"category"`
+	Solution    string `json:"solution" form:"solution"`
+}
+
+var Tasks []Task
+
+// router.GET("/array", func(c *gin.Context) {
+// 	var values []int
+// 	for i := 0; i < 5; i++ {
+// 		values = append(values, i)
+// 	}
+
+// 	c.HTML(http.StatusOK, "array.tmpl", gin.H{"values": values})
+// })
+
+// <ul>
+//   {{ range .values }}
+//   <li>{{ . }}</li>
+//   {{ end }}
+// </ul>
+
 func GetCatalog(c *gin.Context) {
 	c.HTML(http.StatusOK, "catalog.html", gin.H{
-		"status": http.StatusOK,
+		"tasks": Tasks,
 	})
 }
 
