@@ -304,6 +304,12 @@ func GetProfile(c *gin.Context) {
 	})
 }
 
+// TODO Доделать функцию принятия данных из модального окна на странице профиля, 
+// TODO для изменения данных изменять их в redis (ключи уже существуют)
+func ReSaveUserData(c *gin.Context) {
+	
+}
+
 func GetResourses(c *gin.Context) {
 	c.HTML(http.StatusOK, "resourses.html", gin.H{
 		"status": http.StatusOK,

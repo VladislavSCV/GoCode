@@ -168,7 +168,7 @@
                 <h2>Редактировать профиль</h2>
                 <span class="close-button">&times;</span>
             </div>
-            <form id="editForm">
+            <form id="editForm" action="/ReSaveUserData" method="post">
                 <label for="username">Имя пользователя</label>
                 <input type="text" id="username" name="username" value="{{ .username }}">
                 <label for="about">Обо мне</label>

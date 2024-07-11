@@ -1,23 +1,21 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
 )
-
 
 func main() {
 	r := gin.Default()
 	// Создаем хранилище сессий на основе файлов cookie
-    store := cookie.NewStore([]byte("secret"))
+	store := cookie.NewStore([]byte("secret"))
 	r.LoadHTMLGlob(`..\templates/*`)
 	r.Static("/static", "../static")
 
 	r.Use(LoggerMiddleware())
 	// Используем middleware для сессий
-    r.Use(sessions.Sessions("mysession", store))
-
+	r.Use(sessions.Sessions("mysession", store))
 
 	r.GET("/", GetIndex)
 	r.GET("/signup", GetSignUP)
@@ -33,6 +31,8 @@ func main() {
 	r.GET("/resourses", GetResourses)
 	r.GET("/catalog", GetCatalog)
 	r.POST("/catalog", PostCatalog)
+	// TODO просто перейди к функции
+	r.POST("/ReSaveUserData", ReSaveUserData)
 
 	r.Run(":8000")
 }
