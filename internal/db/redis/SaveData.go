@@ -7,12 +7,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func SetData(key string, value interface{}) {
+func SetData(key string, value interface{}) (error) {
 	err := rdb.Set(ctx, key, value, time.Hour * 24).Err()
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Saved Data!")
+	return nil
 }
 
 func GetData(key string) (interface{}, error) {
@@ -22,7 +23,7 @@ func GetData(key string) (interface{}, error) {
 	} else if err != nil {
 		panic(err)
 	} else {
-		fmt.Println(key, val)
+		// fmt.Println(key, val)
 	}
 	return val, nil
 }

@@ -31,8 +31,10 @@ func main() {
 	r.GET("/resourses", GetResourses)
 	r.GET("/catalog", GetCatalog)
 	r.POST("/catalog", PostCatalog)
-	// TODO просто перейди к функции
+	// TODO в этой функции закончить работу с id
 	r.POST("/ReSaveUserData", ReSaveUserData)
+
+	// TODO задача! получать id пользователя при регистраци, авторизации
 
 	r.Run(":8000")
 }

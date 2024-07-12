@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	pb "github.com/VladislavSCV/GoCode/api/grpc/gen/pb-go/com.user_data"
 	"github.com/VladislavSCV/GoCode/internal/db"
@@ -23,7 +24,6 @@ type server struct {
 	pb.UnimplementedUserDataMessageServiceServer
 }
 
-
 // Login checks if the user is valid and returns a boolean indicating if the
 // login was accepted and an error if there was one.
 func (s *server) Login(ctx context.Context, in *pb.LoginUserDataRequest) (*pb.IsAcceptedLoginResponse, error) {
@@ -35,17 +35,17 @@ func (s *server) Login(ctx context.Context, in *pb.LoginUserDataRequest) (*pb.Is
 		return nil, status.Errorf(codes.Unauthenticated, "Invalid credentials")
 	}
 	return &pb.IsAcceptedLoginResponse{
-		UserName:         userData.UserName,
-		Description:      userData.Description,
-		Email:            userData.Email,
-		Phone:            userData.Phone,
-		AvatarUrl:        userData.AvatarUrl,
-		Status:           userData.Status,
-		Role:             userData.Role,
-		DateOfBirth:      userData.DateOfBirth.Format(time.RFC3339),
-		PrivacySettings:  userData.PrivacySettings,
-		IsActive:         userData.IsActive,
-		LastLogin:        userData.LastLogin.Format(time.RFC3339),
+		UserName:          userData.UserName,
+		Description:       userData.Description,
+		Email:             userData.Email,
+		Phone:             userData.Phone,
+		AvatarUrl:         userData.AvatarUrl,
+		Status:            userData.Status,
+		Role:              userData.Role,
+		DateOfBirth:       userData.DateOfBirth.Format(time.RFC3339),
+		PrivacySettings:   userData.PrivacySettings,
+		IsActive:          userData.IsActive,
+		LastLogin:         userData.LastLogin.Format(time.RFC3339),
 		ConfirmationToken: userData.ConfirmationToken,
 		SocialProfiles:    userData.SocialProfiles,
 	}, nil
@@ -65,7 +65,6 @@ func (s *server) SignUp(ctx context.Context, in *pb.SignUserDataRequest) (*pb.Si
 	return &pb.SignUserDataResponse{IsAccepted: true}, nil
 }
 
-
 func (s *server) GetUserData(ctx context.Context, in *pb.GetUserDataRequest) (*pb.GetUserDataResponse, error) {
 	userId := in.GetUserId()
 	userData, err := db.GetUserData(db.DB, int(userId))
@@ -78,19 +77,19 @@ func (s *server) GetUserData(ctx context.Context, in *pb.GetUserDataRequest) (*p
 	}
 
 	response := &pb.GetUserDataResponse{
-		UserId:       int64(userData.ID),
-		Username:     userData.UserName,
-		Description:  userData.Description,
-		Email:        userData.Email,
-		Phone:        userData.Phone,
-		AvatarUrl:    userData.AvatarUrl,
-		Status:       userData.Status,
-		Role:         userData.Role,
-		PasswordHash: userData.PasswordHash,
-		DateOfBirth:  userData.DateOfBirth.Format(time.RFC3339),
-		PrivacySettings: userData.PrivacySettings,
-		IsActive:     userData.IsActive,
-		LastLogin:    userData.LastLogin.Format(time.RFC3339),
+		UserId:            int64(userData.ID),
+		Username:          userData.UserName,
+		Description:       userData.Description,
+		Email:             userData.Email,
+		Phone:             userData.Phone,
+		AvatarUrl:         userData.AvatarUrl,
+		Status:            userData.Status,
+		Role:              userData.Role,
+		PasswordHash:      userData.PasswordHash,
+		DateOfBirth:       userData.DateOfBirth.Format(time.RFC3339),
+		PrivacySettings:   userData.PrivacySettings,
+		IsActive:          userData.IsActive,
+		LastLogin:         userData.LastLogin.Format(time.RFC3339),
 		ConfirmationToken: userData.ConfirmationToken,
 		SocialProfiles:    userData.SocialProfiles,
 		CreatedAt:         userData.CreatedAt.Format(time.RFC3339),
@@ -99,7 +98,6 @@ func (s *server) GetUserData(ctx context.Context, in *pb.GetUserDataRequest) (*p
 
 	return response, nil
 }
-
 
 func (s *server) UpdateUserData(
 	ctx context.Context,
@@ -110,19 +108,19 @@ func (s *server) UpdateUserData(
 	ca, _ := time.Parse(time.RFC3339, in.CreatedAt)
 	ua, _ := time.Parse(time.RFC3339, in.UpdatedAt)
 	userData := &db.UserData{
-		ID:               int(in.GetUserId()),
-		UserName:         in.GetUsername(),
-		Description:      in.GetDescription(),
-		Email:            in.GetEmail(),
-		Phone:            in.GetPhone(),
-		AvatarUrl:        in.GetAvatarUrl(),
-		Status:           in.GetStatus(),
-		Role:             in.GetRole(),
-		PasswordHash:     in.GetPasswordHash(),
-		DateOfBirth:      dob,
-		PrivacySettings:  in.GetPrivacySettings(),
-		IsActive:         in.GetIsActive(),
-		LastLogin:        ll,
+		ID:                int(in.GetUserId()),
+		UserName:          in.GetUsername(),
+		Description:       in.GetDescription(),
+		Email:             in.GetEmail(),
+		Phone:             in.GetPhone(),
+		AvatarUrl:         in.GetAvatarUrl(),
+		Status:            in.GetStatus(),
+		Role:              in.GetRole(),
+		PasswordHash:      in.GetPasswordHash(),
+		DateOfBirth:       dob,
+		PrivacySettings:   in.GetPrivacySettings(),
+		IsActive:          in.GetIsActive(),
+		LastLogin:         ll,
 		ConfirmationToken: in.GetConfirmationToken(),
 		SocialProfiles:    in.GetSocialProfiles(),
 		CreatedAt:         ca,
@@ -189,7 +187,7 @@ func (s *server) UpdateUserAvatar(ctx context.Context, in *pb.UpdateUserAvatarRe
 	}, nil
 }
 
-func (s *server) UpdateUserName(ctx context.Context, in *pb.UpdateUserNameRequest,) (*pb.UpdateUserNameResponse, error) {
+func (s *server) UpdateUserName(ctx context.Context, in *pb.UpdateUserNameRequest) (*pb.UpdateUserNameResponse, error) {
 	err := db.UpdateUserName(db.DB, int(in.GetUserId()), in.GetNewUsername())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to update user name: %v", err)
@@ -207,6 +205,15 @@ func (s *server) UpdateUserDescription(ctx context.Context, in *pb.UpdateUserDes
 	return &pb.UpdateUserDescriptionResponse{
 		Success: true,
 	}, nil
+}
+
+// TODO доделать функцию для работы со скиллами
+func (s *server) UpdateUserSkills(ctx context.Context, in *pb.UpdateUserSkillsRequest) (*emptypb.Empty, error) {
+	err := db.UpdateUserSkills(db.DB, int(in.GetId()), in.Skills)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to update user description: %v", err)
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func main() {

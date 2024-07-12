@@ -2,6 +2,9 @@ syntax = "proto3";
 
 option go_package = "com.user_data";
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
 message GetUserDataRequest {
     int64 user_id = 1;
 }
@@ -133,21 +136,25 @@ message LoginUserDataRequest {
 }
 
 message IsAcceptedLoginResponse {
-    string UserName = 1;
-    string Description = 2;
-    string Email = 3;
-    string Phone = 4;
-    string AvatarUrl = 5;
-    string Status = 6;
-    string Role = 7;
-    string DateOfBirth = 8;
-    string PrivacySettings = 9;
-    bool IsActive = 10;
-    string LastLogin = 11;
-    string ConfirmationToken = 12;
-    string SocialProfiles = 13;
+    string userName = 1;
+    string description = 2;
+    string email = 3;
+    string phone = 4;
+    string avatarUrl = 5;
+    string status = 6;
+    string role = 7;
+    string dateOfBirth = 8;
+    string privacySettings = 9;
+    bool isActive = 10;
+    string lastLogin = 11;
+    string confirmationToken = 12;
+    string socialProfiles = 13;
 }
 
+message UpdateUserSkillsRequest {
+    int64 id = 1;
+    string skills = 2;
+}
 
 service UserDataMessageService {
     rpc Login(LoginUserDataRequest) returns (IsAcceptedLoginResponse);
@@ -161,4 +168,5 @@ service UserDataMessageService {
     rpc UpdateUserAvatar(UpdateUserAvatarRequest) returns (UpdateUserAvatarResponse);
     rpc UpdateUserName(UpdateUserNameRequest) returns (UpdateUserNameResponse);
     rpc UpdateUserDescription(UpdateUserDescriptionRequest) returns (UpdateUserDescriptionResponse);
+    rpc UpdateUserSkills(UpdateUserSkillsRequest) returns (google.protobuf.Empty);
 }

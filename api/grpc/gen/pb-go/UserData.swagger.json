@@ -72,43 +72,43 @@
     "IsAcceptedLoginResponse": {
       "type": "object",
       "properties": {
-        "UserName": {
+        "userName": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "AvatarUrl": {
+        "avatarUrl": {
           "type": "string"
         },
-        "Status": {
+        "status": {
           "type": "string"
         },
-        "Role": {
+        "role": {
           "type": "string"
         },
-        "DateOfBirth": {
+        "dateOfBirth": {
           "type": "string"
         },
-        "PrivacySettings": {
+        "privacySettings": {
           "type": "string"
         },
-        "IsActive": {
+        "isActive": {
           "type": "boolean"
         },
-        "LastLogin": {
+        "lastLogin": {
           "type": "string"
         },
-        "ConfirmationToken": {
+        "confirmationToken": {
           "type": "string"
         },
-        "SocialProfiles": {
+        "socialProfiles": {
           "type": "string"
         }
       }

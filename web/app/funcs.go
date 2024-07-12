@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"google.golang.org/grpc"
 
@@ -37,6 +38,12 @@ type FormDataSignUpSecondStep struct {
 type FormDataLogin struct {
 	UserEmail    string `form:"email"`
 	UserPassword string `form:"password"`
+}
+
+type ModalDataProfile struct {
+	Name        string `form:"username"`
+	Description string `form:"about"`
+	Skills      string `form:"skills"`
 }
 
 func init() {
@@ -288,10 +295,23 @@ func GetProfile(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
-	
+	skills, err := redis.GetData("skills")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+
+	skillsStr, ok := skills.(string)
+	if !ok {
+		log.Println("!!!Skills Not a string!!!")
+		// Handle the case when skills is not a string
+		// For example, you can return an error or set skillsStr to an empty string
+	}
+
+	skillsList := strings.Split(skillsStr, ", ")
+
 	c.HTML(http.StatusOK, "profile.html", gin.H{
 		"username":        username,
-		"description": 	   description,
+		"description":     description,
 		"email":           email,
 		"phone":           phone,
 		"avatar_url":      avatarUrl,
@@ -301,13 +321,35 @@ func GetProfile(c *gin.Context) {
 		"is_active":       isActive,
 		"last_login":      lastLogin,
 		"social_profiles": socialProfiles,
+		"skills":          skillsList,
 	})
 }
 
-// TODO Доделать функцию принятия данных из модального окна на странице профиля, 
+// TODO Доделать функцию принятия данных из модального окна на странице профиля,
 // TODO для изменения данных изменять их в redis (ключи уже существуют)
 func ReSaveUserData(c *gin.Context) {
-	
+	var rsvd ModalDataProfile
+	if err := c.Bind(&rsvd); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	fmt.Println(rsvd)
+
+	if rsvd.Name != "" {
+		redis.SetData("name", rsvd.Name)
+	}
+	if rsvd.Description != "" {
+		redis.SetData("description", rsvd.Description)
+	}
+	if rsvd.Skills != "" {
+		// grpcFunc.UpdateUserSkills(ctx, &pb.UpdateUserSkillsRequest{
+		// 	Id: ,
+		// })
+		redis.SetData("skills", rsvd.Skills)
+	}
+
+	c.Redirect(http.StatusFound, "/profile")
 }
 
 func GetResourses(c *gin.Context) {

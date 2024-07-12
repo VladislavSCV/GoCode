@@ -217,3 +217,12 @@ func UpdateUserDescription(db *sql.DB, id int, description string) error {
 	}
 	return nil
 }
+
+func UpdateUserSkills(db *sql.DB, id int, skills string) error {
+	_, err := db.Exec("UPDATE user_data SET skills = $1 WHERE id = $2", skills, id)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}

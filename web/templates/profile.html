@@ -140,11 +140,11 @@
             <div class="section">
                 <h2>Мои навыки</h2>
                 <ul>
-                    <li>Go</li>
-                    <li>Python</li>
-                    <li>Docker</li>
-                    <li>Kubernetes</li>
-                    <li>SQL</li>
+                    {{ range .skills }}
+                    
+                    <li>{{ . }}</li>
+
+                    {{ end }}
                 </ul>
             </div>
             <div class="section">
@@ -170,11 +170,14 @@
             </div>
             <form id="editForm" action="/ReSaveUserData" method="post">
                 <label for="username">Имя пользователя</label>
-                <input type="text" id="username" name="username" value="{{ .username }}">
+                <input type="text" id="username" name="username" placeholder="...">
+                
                 <label for="about">Обо мне</label>
-                <textarea id="about" name="about" rows="4">Привет! Меня зовут Иван. Я увлечен программированием и особенно люблю язык Go. В свободное время я занимаюсь решением задач и участвую в соревнованиях по программированию.</textarea>
+                <textarea id="about" name="about" rows="4" placeholder="..."></textarea>
+                
                 <label for="skills">Мои навыки</label>
-                <input type="text" id="skills" name="skills" value="Go, Python, Docker, Kubernetes, SQL">
+                <input type="text" id="skills" name="skills" placeholder="Go, Python, Docker, ...">
+                
                 <div class="modal-footer">
                     <button type="submit" class="button">Сохранить</button>
                 </div>
