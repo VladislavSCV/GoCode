@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 
 	"google.golang.org/grpc"
 
@@ -17,6 +18,8 @@ import (
 )
 
 var (
+	wg               sync.WaitGroup
+	mu               sync.Mutex
 	ctx              = context.Background()
 	conn, errConGRPC = grpc.Dial(":50051", grpc.WithInsecure())
 	grpcFunc         = pb.NewUserDataMessageServiceClient(conn)
@@ -72,6 +75,13 @@ func GetSignUpNextStep(c *gin.Context) {
 }
 
 func SignUpSaveENP(c *gin.Context) {
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		redis.ClearData()
+	}()
+
 	var dataENP FormDataSignUpFirstStep
 	if err := c.Bind(&dataENP); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -102,6 +112,7 @@ func SignUpSaveENP(c *gin.Context) {
 	redis.SetData("phone", UserPhone)
 
 	// Redirect with appropriate status code
+	wg.Wait()
 	c.Redirect(http.StatusFound, "/signupnextstep")
 }
 
@@ -163,6 +174,8 @@ func PostSign(c *gin.Context) {
 	}
 
 	log.Println(r.String())
+
+	redis.SetData("id", r.UserId)
 
 	redis.SetData("name", dataNURD.Username)
 
@@ -399,3 +412,17 @@ func PostCatalog(c *gin.Context) {
 		"category":   category,
 	})
 }
+
+// func UserData(c *gin.Context) {
+// 	if c == nil {
+// 		panic("gin context is nil")
+// 	}
+
+// 	c.JSON(http.StatusOK, gin.H{
+// 		s, err := json.Marshal()
+// 		if err != nil {
+// 			log.Print(err)
+// 		}
+// 		fmt.Println(string(s))
+// 	})
+// }

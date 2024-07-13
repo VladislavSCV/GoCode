@@ -35,6 +35,7 @@ func (s *server) Login(ctx context.Context, in *pb.LoginUserDataRequest) (*pb.Is
 		return nil, status.Errorf(codes.Unauthenticated, "Invalid credentials")
 	}
 	return &pb.IsAcceptedLoginResponse{
+		Id: 			   int64(userData.ID),
 		UserName:          userData.UserName,
 		Description:       userData.Description,
 		Email:             userData.Email,
@@ -58,11 +59,11 @@ func (s *server) SignUp(ctx context.Context, in *pb.SignUserDataRequest) (*pb.Si
 	// if err != nil {
 	// 	return nil, status.Errorf(codes.Internal, "Failed to parse date of birth: %v", err)
 	// }
-	err := db.SignUp(db.DB, in.Username, in.Email, in.Phone, in.AvatarUrl, in.Role, in.PasswordHash, in.DateOfBirth)
+	id, err := db.SignUp(db.DB, in.Username, in.Email, in.Phone, in.AvatarUrl, in.Role, in.PasswordHash, in.DateOfBirth)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to sign up: %v", err)
 	}
-	return &pb.SignUserDataResponse{IsAccepted: true}, nil
+	return &pb.SignUserDataResponse{UserId: int64(id), IsAccepted: true}, nil
 }
 
 func (s *server) GetUserData(ctx context.Context, in *pb.GetUserDataRequest) (*pb.GetUserDataResponse, error) {

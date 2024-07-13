@@ -72,6 +72,10 @@
     "IsAcceptedLoginResponse": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
         "userName": {
           "type": "string"
         },
@@ -116,6 +120,10 @@
     "SignUserDataResponse": {
       "type": "object",
       "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "is_accepted": {
           "type": "boolean"
         }

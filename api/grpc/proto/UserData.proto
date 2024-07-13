@@ -127,7 +127,8 @@ message SignUserDataRequest {
 }
 
 message SignUserDataResponse {
-    bool is_accepted = 1;
+    int64 user_id = 1;
+    bool is_accepted = 2;
 }
 
 message LoginUserDataRequest {
@@ -136,19 +137,20 @@ message LoginUserDataRequest {
 }
 
 message IsAcceptedLoginResponse {
-    string userName = 1;
-    string description = 2;
-    string email = 3;
-    string phone = 4;
-    string avatarUrl = 5;
-    string status = 6;
-    string role = 7;
-    string dateOfBirth = 8;
-    string privacySettings = 9;
-    bool isActive = 10;
-    string lastLogin = 11;
-    string confirmationToken = 12;
-    string socialProfiles = 13;
+    int64 id = 1;
+    string userName = 2;
+    string description = 3;
+    string email = 4;
+    string phone = 5;
+    string avatarUrl = 6;
+    string status = 7;
+    string role = 8;
+    string dateOfBirth = 9;
+    string privacySettings = 10;
+    bool isActive = 11;
+    string lastLogin = 12;
+    string confirmationToken = 13;
+    string socialProfiles = 14;
 }
 
 message UpdateUserSkillsRequest {

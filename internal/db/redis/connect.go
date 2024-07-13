@@ -23,3 +23,11 @@ func Connect() {
 		log.Println("Successfully connected!")
 	}
 }
+
+func ClearData() (bool) {
+	err := rdb.FlushDB(context.Background()).Err()
+	if err != nil {
+		return false
+	}
+	return true
+}
