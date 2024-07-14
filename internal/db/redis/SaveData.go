@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -19,11 +20,11 @@ func SetData(key string, value interface{}) (error) {
 func GetData(key string) (interface{}, error) {
 	val, err := rdb.Get(ctx, key).Result()
 	if err == redis.Nil {
-		fmt.Printf("%v does not exist \n", key)
+		errors.New("No data found for key")
 	} else if err != nil {
 		panic(err)
 	} else {
-		// fmt.Println(key, val)
+		fmt.Println(key, val)
 	}
 	return val, nil
 }

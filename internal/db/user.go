@@ -216,7 +216,7 @@ func UpdateUserAvatar(db *sql.DB, id int, avatarUrl string) error {
 }
 
 func UpdateUserName(db *sql.DB, id int, userName string) error {
-	_, err := db.Exec("UPDATE user_data SET user_name = $1, updated_at = $2 WHERE id = $3", userName, time.Now(), id)
+	_, err := db.Exec("UPDATE user_data SET username = $1, updated_at = $2 WHERE id = $3", userName, time.Now(), id)
 	if err != nil {
 		log.Println(err)
 		return err

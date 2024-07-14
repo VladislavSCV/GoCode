@@ -118,7 +118,7 @@
         <div class="profile-header">
             <img src="https://via.placeholder.com/100" alt="User Avatar">
             <div class="profile-info">
-                <h1>{{ .username }}</h1>
+                <h1>{{ .username }} || {{ .id }}</h1>
                 {{ if .is_active }}
                 active
                 {{ else }}
@@ -128,7 +128,7 @@
             </div>
             <div class="profile-actions">
                 <button class="button edit-button">Редактировать</button>
-                <button class="button">Выход</button>
+                <a href="/QuitFromProfile"><button class="button">Выход</button></a>
             </div>
         </div>
         <div class="content">

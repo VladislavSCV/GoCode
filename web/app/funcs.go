@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -23,7 +24,16 @@ var (
 	ctx              = context.Background()
 	conn, errConGRPC = grpc.Dial(":50051", grpc.WithInsecure())
 	grpcFunc         = pb.NewUserDataMessageServiceClient(conn)
+	Tasks            []Task
 )
+
+type Task struct {
+	Title       string `json:"title" form:"title"`
+	Description string `json:"description" form:"description"`
+	Difficulty  string `json:"difficulty" form:"difficulty"`
+	Category    string `json:"category" form:"category"`
+	Solution    string `json:"solution" form:"solution"`
+}
 
 type FormDataSignUpFirstStep struct {
 	Email    string `form:"email"`
@@ -207,8 +217,9 @@ func PostLogin(c *gin.Context) {
 	}
 
 	log.Println(r.String())
-	redis.SetData("description", r.Description)
+	redis.SetData("id", r.Id)
 	redis.SetData("name", r.UserName)
+	redis.SetData("description", r.Description)
 	redis.SetData("email", r.Email)
 	redis.SetData("phone", r.Phone)
 	redis.SetData("avatar_url", r.AvatarUrl)
@@ -229,12 +240,20 @@ func PostLogin(c *gin.Context) {
 }
 
 func GetMainPage(c *gin.Context) {
+	_, err := redis.GetData("id")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 	c.HTML(http.StatusOK, "main.html", gin.H{
 		"status": http.StatusOK,
 	})
 }
 
 func GetTask(c *gin.Context) {
+	_, err := redis.GetData("id")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 	c.HTML(http.StatusOK, "task.html", gin.H{
 		"status": http.StatusOK,
 	})
@@ -245,6 +264,10 @@ type CheckCode struct {
 }
 
 func PostTask(c *gin.Context) {
+	_, err := redis.GetData("id")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 	var checkCode CheckCode
 	if err := c.ShouldBind(&checkCode); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -264,6 +287,10 @@ func CheckSolution(code string) bool {
 }
 
 func GetProfile(c *gin.Context) {
+	_, err := redis.GetData("id")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 	username, err := redis.GetData("name")
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -313,6 +340,11 @@ func GetProfile(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 
+	id, err := redis.GetData("id")
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+
 	skillsStr, ok := skills.(string)
 	if !ok {
 		log.Println("!!!Skills Not a string!!!")
@@ -335,12 +367,18 @@ func GetProfile(c *gin.Context) {
 		"last_login":      lastLogin,
 		"social_profiles": socialProfiles,
 		"skills":          skillsList,
+		"id":              id,
 	})
 }
 
 // TODO Доделать функцию принятия данных из модального окна на странице профиля,
 // TODO для изменения данных изменять их в redis (ключи уже существуют)
 func ReSaveUserData(c *gin.Context) {
+	wg.Add(3)
+	_, err := redis.GetData("id")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 	var rsvd ModalDataProfile
 	if err := c.Bind(&rsvd); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -349,60 +387,94 @@ func ReSaveUserData(c *gin.Context) {
 
 	fmt.Println(rsvd)
 
+	id, err := redis.GetData("id")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(id, "---------------------------------------------------")
+
+	userId, err := strconv.Atoi(id.(string))
+	log.Println(userId, "---------------------------------------------------")
+
 	if rsvd.Name != "" {
+		go func() {
+			defer wg.Done()
+			r, err := grpcFunc.UpdateUserName(ctx, &pb.UpdateUserNameRequest{
+				UserId:      int64(userId),
+				NewUsername: rsvd.Name,
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Print(r.String())
+			log.Print("NAME IS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111")
+		}()
 		redis.SetData("name", rsvd.Name)
 	}
 	if rsvd.Description != "" {
+		go func() {
+			defer wg.Done()
+			r, err := grpcFunc.UpdateUserDescription(ctx, &pb.UpdateUserDescriptionRequest{
+				UserId:         int64(userId),
+				NewDescription: rsvd.Description,
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Print(r.String())
+			log.Print("DESC IS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111")
+		}()
 		redis.SetData("description", rsvd.Description)
 	}
 	if rsvd.Skills != "" {
-		// grpcFunc.UpdateUserSkills(ctx, &pb.UpdateUserSkillsRequest{
-		// 	Id: ,
-		// })
+		go func() {
+			defer wg.Done()
+			r, err := grpcFunc.UpdateUserSkills(ctx, &pb.UpdateUserSkillsRequest{
+				Id:     int64(userId),
+				Skills: rsvd.Skills,
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Print(r.String())
+			log.Print("SKILLS IS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111")
+		}()
 		redis.SetData("skills", rsvd.Skills)
 	}
-
+	wg.Wait()
 	c.Redirect(http.StatusFound, "/profile")
 }
 
+func QuitFromProfile(c *gin.Context) {
+	redis.ClearData()
+	c.Redirect(http.StatusFound, "/")
+}
+
 func GetResourses(c *gin.Context) {
+	_, err := redis.GetData("id")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 	c.HTML(http.StatusOK, "resourses.html", gin.H{
 		"status": http.StatusOK,
 	})
 }
 
-type Task struct {
-	Title       string `json:"title" form:"title"`
-	Description string `json:"description" form:"description"`
-	Difficulty  string `json:"difficulty" form:"difficulty"`
-	Category    string `json:"category" form:"category"`
-	Solution    string `json:"solution" form:"solution"`
-}
-
-var Tasks []Task
-
-// router.GET("/array", func(c *gin.Context) {
-// 	var values []int
-// 	for i := 0; i < 5; i++ {
-// 		values = append(values, i)
-// 	}
-
-// 	c.HTML(http.StatusOK, "array.tmpl", gin.H{"values": values})
-// })
-
-// <ul>
-//   {{ range .values }}
-//   <li>{{ . }}</li>
-//   {{ end }}
-// </ul>
-
 func GetCatalog(c *gin.Context) {
+	_, err := redis.GetData("id")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 	c.HTML(http.StatusOK, "catalog.html", gin.H{
 		"tasks": Tasks,
 	})
 }
 
 func PostCatalog(c *gin.Context) {
+	_, err := redis.GetData("id")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 	difficulty := c.PostForm("difficulty")
 	category := c.PostForm("category")
 
@@ -412,17 +484,3 @@ func PostCatalog(c *gin.Context) {
 		"category":   category,
 	})
 }
-
-// func UserData(c *gin.Context) {
-// 	if c == nil {
-// 		panic("gin context is nil")
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{
-// 		s, err := json.Marshal()
-// 		if err != nil {
-// 			log.Print(err)
-// 		}
-// 		fmt.Println(string(s))
-// 	})
-// }
